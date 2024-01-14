@@ -1,14 +1,15 @@
 namespace procgentest1.Tests;
 
 using procgentest1;
+using Xunit.Abstractions;
 
 public class ProcGenTests
 {
-    private const int LENGTH_ONE_FLOOR_SEED = 1;
-    private const int LENGTH_TWO_FLOOR_SEED = 9;
-    private const int LENGTH_TWO_FLOOR_JUMP_SEED = 2;
+    private const int ALL_FLOOR_SEED = 1;
+    private const int SHORT_JUMP = 16;
+    private const int TOO_LONG_JUMP = 30;
 
-    ProcGenLevel levelGenerator = new ProcGenLevel();
+    readonly ProcGenLevel levelGenerator = new ProcGenLevel();
 
     [Fact]
     public void SimplestLevel()
@@ -17,20 +18,30 @@ public class ProcGenTests
     }
 
     [Fact]
-    public void AddOneFloor() {
-        levelGenerator.SetSeed(LENGTH_ONE_FLOOR_SEED);
-        Assert.Equal(["S", "F", "E" ], levelGenerator.Generate(1));
+    public void AddOneFloor()
+    {
+        levelGenerator.SetSeed(ALL_FLOOR_SEED);
+        Assert.Equal(["S", "F", "E"], levelGenerator.Generate(1));
     }
 
     [Fact]
-    public void RandomMaxLengthAllFloor() {
-        levelGenerator.SetSeed(LENGTH_TWO_FLOOR_SEED);
-        Assert.Equal(["S", "F", "F", "E" ], levelGenerator.GenerateRandom(5));
+    public void LongerAllFloorMap()
+    {
+        levelGenerator.SetSeed(ALL_FLOOR_SEED);
+        Assert.Equal(["S", "F", "F", "E"], levelGenerator.Generate(2));
     }
 
     [Fact]
-    public void LevelWithAJump() {
-        levelGenerator.SetSeed(LENGTH_TWO_FLOOR_JUMP_SEED);
-        Assert.Equal(["S", "F", "F", "", "E" ], levelGenerator.GenerateRandom(5));
+    public void LevelWithAJump()
+    {
+        levelGenerator.SetSeed(SHORT_JUMP);
+        Assert.Equal(["S", "F", "F", " ", "E"], levelGenerator.Generate(3));
+    }
+
+    [Fact]
+    public void LevelWithALongJump()
+    {
+        levelGenerator.SetSeed(TOO_LONG_JUMP);
+        Assert.Equal(["S", "F", "F", " ", " ", " ", "E" ], levelGenerator.Generate(5));
     }
 }
