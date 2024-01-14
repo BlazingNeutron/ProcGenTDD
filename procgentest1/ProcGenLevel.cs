@@ -9,22 +9,27 @@ public class ProcGenLevel
         //generate noise grid
         string[] noise_grid = new string[length];
         for (int i = 0; i < length; i++) {
-            int noise = random.Next(0, 100);
+            int noise = random.Next(0, 99);
             if (noise > 50) {
-                noise_grid[i] = "";
+                noise_grid[i] = " ";
             } else {
                 noise_grid[i] = "F";
             }
         }
-        List<string> map = ["S", .. noise_grid, "E"];
+        string[] tmp_grid = new string[length];
+        noise_grid.CopyTo(tmp_grid, 0);
+        for (int i = 0; i < length; i++) {
+            if (i > 3 && noise_grid[i - 3] == " " 
+                && noise_grid[i - 2] == " " && noise_grid[i - 1] == " " 
+                && noise_grid[i] == " ") {
+                tmp_grid[i-3] = "F";
+            }
+        }
+        List<string> map = ["S", .. tmp_grid, "E"];
         return [.. map];
     }
 
     public void SetSeed(int seed) {
         random = new Random(seed);
-    }
-
-    public string[] GenerateRandom(int max) {
-        return Generate(random.Next(max));
     }
 }
