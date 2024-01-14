@@ -6,7 +6,17 @@ public class ProcGenLevel
 
     public string[] Generate(int length)
     {
-        List<string> map = ["S", .. Enumerable.Repeat("F", length), "E"];
+        //generate noise grid
+        string[] noise_grid = new string[length];
+        for (int i = 0; i < length; i++) {
+            int noise = random.Next(0, 100);
+            if (noise > 50) {
+                noise_grid[i] = "";
+            } else {
+                noise_grid[i] = "F";
+            }
+        }
+        List<string> map = ["S", .. noise_grid, "E"];
         return [.. map];
     }
 
