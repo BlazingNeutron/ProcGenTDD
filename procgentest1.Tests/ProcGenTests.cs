@@ -14,34 +14,34 @@ public class ProcGenTests
     [Fact]
     public void SimplestLevel()
     {
-        Assert.Equal(["S", "E"], levelGenerator.Generate(0));
+        Assert.Equal(["S", "E"], levelGenerator.Generate(["S", "E"]));
     }
 
     [Fact]
     public void AddOneFloor()
     {
         levelGenerator.SetSeed(ALL_FLOOR_SEED);
-        Assert.Equal(["S", "F", "E"], levelGenerator.Generate(1));
+        Assert.Equal(["S", "F", "E"], levelGenerator.Generate(["S", "", "E"]));
     }
 
     [Fact]
     public void LongerAllFloorMap()
     {
         levelGenerator.SetSeed(ALL_FLOOR_SEED);
-        Assert.Equal(["S", "F", "F", "E"], levelGenerator.Generate(2));
+        Assert.Equal(["S", "F", "F", "E"], levelGenerator.Generate(["S", "", "", "E"]));
     }
 
     [Fact]
     public void LevelWithAJump()
     {
         levelGenerator.SetSeed(SHORT_JUMP);
-        Assert.Equal(["S", "F", "F", " ", "E"], levelGenerator.Generate(3));
+        Assert.Equal(["S", "F", "F", " ", "E"], levelGenerator.Generate(["S", "", "", "", "E"]));
     }
 
     [Fact]
     public void LevelWithALongJump()
     {
         levelGenerator.SetSeed(TOO_LONG_JUMP);
-        Assert.Equal(["S", "F", "F", " ", " ", " ", "E" ], levelGenerator.Generate(5));
+        Assert.Equal(["S", "F", "F", " ", " ", " ", "E" ], levelGenerator.Generate(["S", "", "", "", "", "", "E" ]));
     }
 }
