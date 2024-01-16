@@ -4,7 +4,7 @@ public class ProcGenLevel
 {
     private const string EMPTY_SPACE = " ";
     private const string FLOOR_SPACE = "F";
-    private Random random = new Random();
+    private Random random = new();
 
     public string[] Generate(string[] startingMap)
     {
