@@ -49,6 +49,12 @@ public class ProcGenTests()
        AssertMap(0, "  \nSE", "  \nSE");
     }
 
+    [Fact]
+    public void HighJump()
+    {
+       AssertMap(174, " F \n   \nS E", "   \n   \nS E");
+    }
+
     private void AssertMap(int Seed, string Expected, string startingMap)
     {
         levelGenerator.SetSeed(Seed);
