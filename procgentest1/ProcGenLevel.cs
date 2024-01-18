@@ -6,53 +6,59 @@ public class ProcGenLevel
     private const string FLOOR_SPACE = "F";
     private Random random = new();
 
-    public string[] Generate(string[] startingMap)
+    public string[,] Generate(string[,] startingMap)
     {
-        string[] noise_grid = GenerateNoiseGrid(startingMap);
-        return CelluarAutomaton(startingMap, noise_grid);
+        string[,] noise_grid = GenerateNoiseGrid(startingMap);
+        return CelluarAutomaton(noise_grid);
     }
 
-    private static string[] CelluarAutomaton(string[] startingMap, string[] noise_grid)
+    private static string[,] CelluarAutomaton(string[,] noiseGrid)
     {
-        string[] tmp_grid = new string[startingMap.Length];
-        noise_grid.CopyTo(tmp_grid, 0);
-        for (int i = 0; i < startingMap.Length; i++)
+        string[,] currentGrid = new string[noiseGrid.GetLength(0), noiseGrid.GetLength(1)];
+        Array.Copy(noiseGrid, currentGrid, noiseGrid.GetLength(0) * noiseGrid.GetLength(1));
+        for (int x = 0; x < noiseGrid.GetLength(0); x++)
         {
-            if (IsTheJumpLongerThan3Spaces(noise_grid, i))
+            for (int y = 0; y < noiseGrid.GetLength(1); y++)
             {
-                tmp_grid[i - 3] = FLOOR_SPACE;
+                if (IsTheJumpLongerThan3Spaces(noiseGrid, x, y))
+                {
+                    currentGrid[x - 3, y] = FLOOR_SPACE;
+                }
             }
         }
 
-        return tmp_grid;
+        return currentGrid;
     }
 
-    private static bool IsTheJumpLongerThan3Spaces(string[] noise_grid, int i)
+    private static bool IsTheJumpLongerThan3Spaces(string[,] noise_grid, int x, int y)
     {
-        return i > 3 && noise_grid[i - 3] == EMPTY_SPACE
-            && noise_grid[i - 2] == EMPTY_SPACE
-            && noise_grid[i - 1] == EMPTY_SPACE
-            && noise_grid[i] == EMPTY_SPACE;
+        return x > 3 && noise_grid[x - 3, y] == EMPTY_SPACE
+            && noise_grid[x - 2, y] == EMPTY_SPACE
+            && noise_grid[x - 1, y] == EMPTY_SPACE
+            && noise_grid[x, y] == EMPTY_SPACE;
     }
 
-    private string[] GenerateNoiseGrid(string[] startingMap)
+    private string[,] GenerateNoiseGrid(string[,] startingMap)
     {
-        string[] noise_grid = new string[startingMap.Length];
-        startingMap.CopyTo(noise_grid, 0);
-        for (int i = 0; i < startingMap.Length; i++)
+        string[,] noise_grid = new string[startingMap.GetLength(0),startingMap.GetLength(1)];
+        Array.Copy(startingMap, noise_grid, startingMap.GetLength(0) * startingMap.GetLength(1));
+        for (int x = 0; x < startingMap.GetLength(0); x++)
         {
-            if (IsThisTheStartOrEnd(noise_grid[i]))
+            for (int y = 0; y < startingMap.GetLength(1); y++) 
             {
-                continue;
-            }
-            int noise = random.Next(0, 99);
-            if (noise > 50)
-            {
-                noise_grid[i] = EMPTY_SPACE;
-            }
-            else
-            {
-                noise_grid[i] = FLOOR_SPACE;
+                if (IsThisTheStartOrEnd(noise_grid[x, y]))
+                {
+                    continue;
+                }
+                int noise = random.Next(0, 99);
+                if (noise > 50)
+                {
+                    noise_grid[x, y] = EMPTY_SPACE;
+                }
+                else
+                {
+                    noise_grid[x, y] = FLOOR_SPACE;
+                }
             }
         }
 
