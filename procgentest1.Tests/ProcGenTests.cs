@@ -10,6 +10,8 @@ public class ProcGenTests()
     private const int ALL_FLOOR_SEED = 1;
     private const int SHORT_JUMP = 16;
     private const int TOO_LONG_JUMP = 30;
+    private const int NO_FLOOR_ADD = 0;
+    private const int SIMPLE_HIGH_FLOOR = 174;
 
     readonly ProcGenLevel levelGenerator = new();
 
@@ -46,13 +48,18 @@ public class ProcGenTests()
     [Fact]
     public void SimpleTwoDimensionalLevel()
     {
-       AssertMap(0, "  \nSE", "  \nSE");
+       AssertMap(NO_FLOOR_ADD, "  \nSE", "  \nSE");
     }
 
     [Fact]
     public void HighJump()
     {
-       AssertMap(174, " F \n   \nS E", "   \n   \nS E");
+       AssertMap(SIMPLE_HIGH_FLOOR, " F \n   \nS E", "   \n   \nS E");
+    }
+
+    [Fact]
+    public void StartAndEndAreDifferentHeights() {
+        AssertMap(SIMPLE_HIGH_FLOOR, "SF \n   \n  E", "S  \n   \n  E");
     }
 
     private void AssertMap(int Seed, string Expected, string startingMap)
