@@ -65,45 +65,7 @@ public class ProcGenTests()
     private void AssertMap(int Seed, string Expected, string startingMap)
     {
         levelGenerator.SetSeed(Seed);
-        string[,] actualMap = levelGenerator.Generate(ConvertStringMapTo2DArray(startingMap));
-        Assert.Equal(Expected, Convert2DArrayToStringMap(actualMap));
-    }
-
-    private static string Convert2DArrayToStringMap(string[,] actualMap)
-    {
-        StringBuilder stringMapBuilder = new();
-        for (int y = 0; y < actualMap.GetLength(1); y++) 
-        {
-            for (int x = 0; x < actualMap.GetLength(0); x++)
-            {
-                stringMapBuilder.Append(actualMap[x ,y]);
-            }
-            if (y + 1 < actualMap.GetLength(1))
-            {
-                stringMapBuilder.Append('\n');
-            }
-        }
-        return stringMapBuilder.ToString();
-    }
-
-    private static string[,] ConvertStringMapTo2DArray(string startingMap)
-    {
-        string[] rows = startingMap.Split("\n");
-        int width = rows.Max(x => x.Length);
-        int height = rows.Length;
-
-        string[,] startingMap2D = new string[width, height];
-
-        for (int y = 0; y < height; y++)
-        {
-            string row = rows[y];
-            string[] chars = row.Select(c => c.ToString()).ToArray();
-            for (int x = 0; x < width; x++)
-            {
-                startingMap2D[x, y] = chars[x];
-            }
-        }
-
-        return startingMap2D;
+        Level2D actualMap = levelGenerator.Generate(new Level2D(startingMap));
+        Assert.Equal(Expected, actualMap.ToString());
     }
 }
