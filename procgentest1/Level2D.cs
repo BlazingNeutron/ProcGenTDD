@@ -2,7 +2,8 @@ using System.Text;
 
 namespace procgentest1;
 
-public class Level2D {
+public class Level2D
+{
     public Level2D(Level2D otherLevel)
     {
         LevelArray = new string[otherLevel.GetLength(0), otherLevel.GetLength(1)];
@@ -43,11 +44,11 @@ public class Level2D {
     private string Convert2DArrayToStringMap()
     {
         StringBuilder stringMapBuilder = new();
-        for (int y = 0; y < LevelArray.GetLength(1); y++) 
+        for (int y = 0; y < LevelArray.GetLength(1); y++)
         {
             for (int x = 0; x < LevelArray.GetLength(0); x++)
             {
-                stringMapBuilder.Append(LevelArray[x ,y]);
+                stringMapBuilder.Append(LevelArray[x, y]);
             }
             if (y + 1 < LevelArray.GetLength(1))
             {

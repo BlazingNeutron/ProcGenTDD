@@ -42,7 +42,7 @@ public class ProcGenLevel
         Level2D noise_grid = new Level2D(startingMap);
         for (int x = 0; x < startingMap.GetLength(0); x++)
         {
-            for (int y = 0; y < startingMap.GetLength(1); y++) 
+            for (int y = 0; y < startingMap.GetLength(1); y++)
             {
                 if (IsThisTheStartOrEnd(noise_grid.Get(x, y)))
                 {
@@ -68,7 +68,8 @@ public class ProcGenLevel
         return gridValue == "S" || gridValue == "E";
     }
 
-    public void SetSeed(int seed) {
+    public void SetSeed(int seed)
+    {
         random = new Random(seed);
     }
 }

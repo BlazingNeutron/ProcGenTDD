@@ -48,17 +48,18 @@ public class ProcGenTests()
     [Fact]
     public void SimpleTwoDimensionalLevel()
     {
-       AssertMap(NO_FLOOR_ADD, "  \nSE", "  \nSE");
+        AssertMap(NO_FLOOR_ADD, "  \nSE", "  \nSE");
     }
 
     [Fact]
     public void HighJump()
     {
-       AssertMap(SIMPLE_HIGH_FLOOR, " F \n   \nS E", "   \n   \nS E");
+        AssertMap(SIMPLE_HIGH_FLOOR, " F \n   \nS E", "   \n   \nS E");
     }
 
     [Fact]
-    public void StartAndEndAreDifferentHeights() {
+    public void StartAndEndAreDifferentHeights()
+    {
         AssertMap(SIMPLE_HIGH_FLOOR, "SF \n   \n  E", "S  \n   \n  E");
     }
 
