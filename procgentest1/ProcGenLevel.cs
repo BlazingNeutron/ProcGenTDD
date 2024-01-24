@@ -6,23 +6,27 @@ public class ProcGenLevel
     private const string FLOOR_SPACE = "F";
     private Random random = new();
 
-    public string[,] Generate(string[,] startingMap)
+    public Level2D Generate(Level2D startingMap)
     {
-        string[,] noise_grid = GenerateNoiseGrid(startingMap);
+        Level2D noise_grid = GenerateNoiseGrid(startingMap);
         return CelluarAutomaton(noise_grid);
+        //return noise_grid;
     }
 
-    private static string[,] CelluarAutomaton(string[,] noiseGrid)
+    private static Level2D CelluarAutomaton(Level2D noiseGrid)
     {
-        string[,] currentGrid = new string[noiseGrid.GetLength(0), noiseGrid.GetLength(1)];
-        Array.Copy(noiseGrid, currentGrid, noiseGrid.GetLength(0) * noiseGrid.GetLength(1));
-        for (int x = 0; x < noiseGrid.GetLength(0); x++)
+        var currentGrid = new Level2D(noiseGrid);
+        
+        while (!IsSolvable(currentGrid))
         {
-            for (int y = 0; y < noiseGrid.GetLength(1); y++)
+            for (int x = 0; x < noiseGrid.GetLength(0); x++)
             {
-                if (IsTheJumpLongerThan3Spaces(noiseGrid, x, y))
+                for (int y = 0; y < noiseGrid.GetLength(1); y++)
                 {
-                    currentGrid[x - 3, y] = FLOOR_SPACE;
+                    if (IsTheJumpLongerThanPlayerCanJump(noiseGrid, x, y))
+                    {
+                        currentGrid.Set(x - 1, y, FLOOR_SPACE);
+                    }
                 }
             }
         }
@@ -30,34 +34,36 @@ public class ProcGenLevel
         return currentGrid;
     }
 
-    private static bool IsTheJumpLongerThan3Spaces(string[,] noise_grid, int x, int y)
+    private static bool IsSolvable(Level2D currentGrid)
     {
-        return x > 3 && noise_grid[x - 3, y] == EMPTY_SPACE
-            && noise_grid[x - 2, y] == EMPTY_SPACE
-            && noise_grid[x - 1, y] == EMPTY_SPACE
-            && noise_grid[x, y] == EMPTY_SPACE;
+        return new AStar().FindPath(currentGrid);
     }
 
-    private string[,] GenerateNoiseGrid(string[,] startingMap)
+    private static bool IsTheJumpLongerThanPlayerCanJump(Level2D noise_grid, int x, int y)
     {
-        string[,] noise_grid = new string[startingMap.GetLength(0),startingMap.GetLength(1)];
-        Array.Copy(startingMap, noise_grid, startingMap.GetLength(0) * startingMap.GetLength(1));
+        return x > 1 && noise_grid.Get(x - 1, y) == EMPTY_SPACE
+            && noise_grid.Get(x, y) == EMPTY_SPACE;
+    }
+
+    private Level2D GenerateNoiseGrid(Level2D startingMap)
+    {
+        Level2D noise_grid = new(startingMap);
         for (int x = 0; x < startingMap.GetLength(0); x++)
         {
-            for (int y = 0; y < startingMap.GetLength(1); y++) 
+            for (int y = 0; y < startingMap.GetLength(1); y++)
             {
-                if (IsThisTheStartOrEnd(noise_grid[x, y]))
+                if (IsThisTheStartOrEnd(noise_grid.Get(x, y)))
                 {
                     continue;
                 }
                 int noise = random.Next(0, 99);
                 if (noise > 50)
                 {
-                    noise_grid[x, y] = EMPTY_SPACE;
+                    noise_grid.Set(x, y, EMPTY_SPACE);
                 }
                 else
                 {
-                    noise_grid[x, y] = FLOOR_SPACE;
+                    noise_grid.Set(x, y, FLOOR_SPACE);
                 }
             }
         }
@@ -70,7 +76,8 @@ public class ProcGenLevel
         return gridValue == "S" || gridValue == "E";
     }
 
-    public void SetSeed(int seed) {
+    public void SetSeed(int seed)
+    {
         random = new Random(seed);
     }
 }
