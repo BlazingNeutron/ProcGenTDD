@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text;
 
 namespace procgentest1;
@@ -19,6 +20,31 @@ public class Level2D
     public int GetLength(int direction = 0) => LevelArray.GetLength(direction);
 
     override public string ToString() => Convert2DArrayToStringMap();
+
+    public Vector2 StartPosition()
+    {
+        return FindPositionOf("S");
+    }
+
+    public Vector2 EndPosition()
+    {
+        return FindPositionOf("E");
+    }
+
+    private Vector2 FindPositionOf(string v)
+    {
+        for (int y = 0; y < LevelArray.GetLength(1); y++)
+        {
+            for (int x = 0; x < LevelArray.GetLength(0); x++)
+            {
+                if (LevelArray[x, y] == v)
+                {
+                    return new Vector2(x, y);
+                }
+            }
+        }
+        return new();
+    }
 
     private string[,] LevelArray { get; set; } = new string[0, 0];
 

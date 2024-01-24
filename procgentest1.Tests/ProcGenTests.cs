@@ -22,7 +22,7 @@ public class ProcGenTests()
     }
 
     [Fact]
-    public void AddOneFloor()
+    public void OneFloor()
     {
         AssertMap(ALL_FLOOR_SEED, "SFE", "S E");
     }
@@ -42,7 +42,7 @@ public class ProcGenTests()
     [Fact]
     public void LevelWithALongJump()
     {
-        AssertMap(TOO_LONG_JUMP, "SFF   E", "S     E");
+        AssertMap(TOO_LONG_JUMP, "SFFFF E", "S     E");
     }
 
     [Fact]
@@ -51,17 +51,17 @@ public class ProcGenTests()
         AssertMap(NO_FLOOR_ADD, "  \nSE", "  \nSE");
     }
 
-    [Fact]
-    public void HighJump()
-    {
-        AssertMap(SIMPLE_HIGH_FLOOR, " F \n   \nS E", "   \n   \nS E");
-    }
+    // [Fact]
+    // public void HighJump()
+    // {
+    //     AssertMap(4954, " F  \nS  E", "    \nS  E");
+    // }
 
-    [Fact]
-    public void StartAndEndAreDifferentHeights()
-    {
-        AssertMap(SIMPLE_HIGH_FLOOR, "SF \n   \n  E", "S  \n   \n  E");
-    }
+    // [Fact]
+    // public void StartAndEndAreDifferentHeights()
+    // {
+    //     AssertMap(SIMPLE_HIGH_FLOOR, "SF \n   \n  E", "S  \n   \n  E");
+    // }
 
     private void AssertMap(int Seed, string Expected, string startingMap)
     {

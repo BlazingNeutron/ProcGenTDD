@@ -10,18 +10,23 @@ public class ProcGenLevel
     {
         Level2D noise_grid = GenerateNoiseGrid(startingMap);
         return CelluarAutomaton(noise_grid);
+        //return noise_grid;
     }
 
     private static Level2D CelluarAutomaton(Level2D noiseGrid)
     {
         var currentGrid = new Level2D(noiseGrid);
-        for (int x = 0; x < noiseGrid.GetLength(0); x++)
+        
+        while (!IsSolvable(currentGrid))
         {
-            for (int y = 0; y < noiseGrid.GetLength(1); y++)
+            for (int x = 0; x < noiseGrid.GetLength(0); x++)
             {
-                if (IsTheJumpLongerThan3Spaces(noiseGrid, x, y))
+                for (int y = 0; y < noiseGrid.GetLength(1); y++)
                 {
-                    currentGrid.Set(x - 3, y, FLOOR_SPACE);
+                    if (IsTheJumpLongerThanPlayerCanJump(noiseGrid, x, y))
+                    {
+                        currentGrid.Set(x - 1, y, FLOOR_SPACE);
+                    }
                 }
             }
         }
@@ -29,17 +34,20 @@ public class ProcGenLevel
         return currentGrid;
     }
 
-    private static bool IsTheJumpLongerThan3Spaces(Level2D noise_grid, int x, int y)
+    private static bool IsSolvable(Level2D currentGrid)
     {
-        return x > 3 && noise_grid.Get(x - 3, y) == EMPTY_SPACE
-            && noise_grid.Get(x - 2, y) == EMPTY_SPACE
-            && noise_grid.Get(x - 1, y) == EMPTY_SPACE
+        return new AStar().FindPath(currentGrid);
+    }
+
+    private static bool IsTheJumpLongerThanPlayerCanJump(Level2D noise_grid, int x, int y)
+    {
+        return x > 1 && noise_grid.Get(x - 1, y) == EMPTY_SPACE
             && noise_grid.Get(x, y) == EMPTY_SPACE;
     }
 
     private Level2D GenerateNoiseGrid(Level2D startingMap)
     {
-        Level2D noise_grid = new Level2D(startingMap);
+        Level2D noise_grid = new(startingMap);
         for (int x = 0; x < startingMap.GetLength(0); x++)
         {
             for (int y = 0; y < startingMap.GetLength(1); y++)
