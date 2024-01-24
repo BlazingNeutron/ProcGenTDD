@@ -16,15 +16,15 @@ namespace procgentest1
 
         public override bool Equals(object? obj)
         {
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-            {
-                return false;
-            }
-            else
-            {
+            // if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            // {
+            //     return false;
+            // }
+            // else
+            // {
                 Node other = (Node)obj;
                 return other.Position.Equals(this.Position);
-            }
+            // }
         }
     }
 
@@ -57,7 +57,7 @@ namespace procgentest1
                     {
                         foreach (var (Element, Priority) in OpenList.UnorderedItems)
                         {
-                            if (Element == n)
+                            if (Element.Equals(n))
                             {
                                 continue;
                             }
@@ -102,11 +102,18 @@ namespace procgentest1
             {
                 neighbours.Add(new(new Vector2(current.Position.X + 1, current.Position.Y - 1)));
             }
-            if (current.Position.Y - 1 >= 0 && current.Position.X - 1 < width)
+            if (current.Position.Y - 1 >= 0 && current.Position.X - 1 >= 0)
             {
                 neighbours.Add(new(new Vector2(current.Position.X - 1, current.Position.Y - 1)));
             }
-
+            if (current.Position.Y + 1 < height && current.Position.X + 2 < width)
+            {
+                neighbours.Add(new(new Vector2(current.Position.X + 2, current.Position.Y + 1)));
+            }
+            if (current.Position.Y + 2 < height && current.Position.X + 2 < width)
+            {
+                neighbours.Add(new(new Vector2(current.Position.X + 2, current.Position.Y + 2)));
+            }
             return neighbours;
         }
     }

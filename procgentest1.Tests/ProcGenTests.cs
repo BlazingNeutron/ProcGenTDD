@@ -51,17 +51,23 @@ public class ProcGenTests()
         AssertMap(NO_FLOOR_ADD, "  \nSE", "  \nSE");
     }
 
-    // [Fact]
-    // public void HighJump()
-    // {
-    //     AssertMap(4954, " F  \nS  E", "    \nS  E");
-    // }
+    [Fact]
+    public void HighJump()
+    {
+        AssertMap(4954, " F  \nS  E", "    \nS  E");
+    }
 
-    // [Fact]
-    // public void StartAndEndAreDifferentHeights()
-    // {
-    //     AssertMap(SIMPLE_HIGH_FLOOR, "SF \n   \n  E", "S  \n   \n  E");
-    // }
+    [Fact]
+    public void StartAndEndAreDifferentHeights()
+    {
+        AssertMap(SIMPLE_HIGH_FLOOR, "SF \n   \n  E", "S  \n   \n  E");
+    }
+
+    [Fact]
+    public void EmptyLevel()
+    {
+        AssertMap(SIMPLE_HIGH_FLOOR, "", "");
+    }
 
     private void AssertMap(int Seed, string Expected, string startingMap)
     {
