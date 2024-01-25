@@ -4,7 +4,7 @@
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
-    "ghcr.io/devcontainers/features/node": "lts",
+    "ghcr.io/devcontainers/features/node": "lts"
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -17,6 +17,11 @@
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "dotnet tool restore",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-dotnettools.csdevkit"]
+    }
+  }
 
   // Configure tool-specific properties.
   // "customizations": {},
