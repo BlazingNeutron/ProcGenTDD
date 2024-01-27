@@ -69,6 +69,23 @@ public class ProcGenTests()
         AssertMap(SIMPLE_HIGH_FLOOR, "", "");
     }
 
+    [Fact]
+    public void LargerLevel10Squared()
+    {
+        AssertMap(0, 
+            "SFFF F F  \n"+
+            " F FFF  F \n"+
+            " F F  FFFF\n"+
+            "   FF     \n"+
+            " FF FF  F \n"+
+            "F    FF  F\n"+
+            " F     FFF\n"+
+            "   FF F   \n"+
+            "F  FF    F\n"+
+            "   FF  F E",
+            "S         \n          \n          \n          \n          \n          \n          \n          \n          \n         E");
+    }
+
     private void AssertMap(int Seed, string Expected, string startingMap)
     {
         levelGenerator.SetSeed(Seed);
