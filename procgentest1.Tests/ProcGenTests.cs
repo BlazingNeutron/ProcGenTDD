@@ -1,11 +1,12 @@
 namespace procgentest1.Tests;
 
 using System;
+using System.Numerics;
 using System.Text;
 using procgentest1;
 using Xunit.Abstractions;
 
-public class ProcGenTests()
+public class ProcGenTests
 {
     private const int ALL_FLOOR_SEED = 1;
     private const int SHORT_JUMP = 16;
@@ -70,26 +71,65 @@ public class ProcGenTests()
     }
 
     [Fact]
-    public void LargerLevel10Squared()
+    public void LargerLevel30Squared()
     {
         AssertMap(0, 
-            "SFFF F F  \n"+
-            " F FFF  F \n"+
-            " F F  FFFF\n"+
-            "   FF     \n"+
-            " FF FF  F \n"+
-            "F    FF  F\n"+
-            " F     FFF\n"+
-            "   FF F   \n"+
-            "F  FF    F\n"+
-            "   FF  F E",
-            "S         \n          \n          \n          \n          \n          \n          \n          \n          \n         E");
+            "SF   FF F FFF   FFFF   FFF  F \n"+
+            " F  F FFFF    FF    F F  FFFFF\n"+
+            " FFFFFF   F  FF   F FFFF FF FF\n"+
+            " F     F     F     FF FFFFF FF\n"+
+            "    F FFF FFFFFF  FF  F  FFFFF\n"+
+            "F FFFF F  F     F FFF FFFF  FF\n"+
+            "   F FF  FFF  FF  FFF FF  FF F\n"+
+            " FF   FFFFF F     FF FFF FFFF \n"+
+            "FF F   F   FFF  F FFF F  F  FF\n"+
+            " F FF  FF  F FFF  FF  F F  F F\n"+
+            "F FF  F FF F F      F F     F \n"+
+            "FF  F  FF  F F       F   F  FF\n"+
+            "F F FFF FFF   FFFFF F  FF FF F\n"+
+            " F   F          F   F   FFF  F\n"+
+            "FF  FF  F F F F F    F FFFFFFF\n"+
+            "   FF  F    FF    FFF FF FF   \n"+
+            "F F F FF  FF F F F  FFF   FFF \n"+
+            " F F  FF  F  F FFFFF  F F     \n"+
+            " F      FFFFFFFF    F F  FFF F\n"+
+            " FF F      F F F   F   F F   F\n"+
+            "FF F         F   F  FFF F F FF\n"+
+            " FFFFFF FFFFF  F F F  FFF F  F\n"+
+            "  FF FFF FF FFFFF FF FF F FF F\n"+
+            "    FF F  F F     F F F FFFFFF\n"+
+            "FFF  FFFFFF FFF  F   FF F   F \n"+
+            " F F F FF F  F  FFFF  FFFF FFF\n"+
+            "  FF F   F FFFFFF  FFF F FFFF \n"+
+            "     F FFF FF F FF FF        F\n"+
+            "     FF  F FF  FFFFF F FFF   F\n"+
+            "   FFFFF   F FFF  FFFFFFFFF  E",
+            GenerateEmptyLevel(30, 30, 0, 928));
+    }
+
+    private readonly ITestOutputHelper output;
+
+    public ProcGenTests(ITestOutputHelper output)
+    {
+        this.output = output;
+    }
+
+    private string GenerateEmptyLevel(int width, int height, int startIndex, int endIndex)
+    {
+        string emptyLevel = string.Concat(Enumerable.Repeat(new string(' ', width) + '\n', height));
+        emptyLevel = emptyLevel.Remove(emptyLevel.Length - 1, 1);
+        StringBuilder sb = new(emptyLevel);
+        sb[startIndex] = 'S';
+        sb[endIndex] = 'E';
+        //output.WriteLine(sb.ToString());
+        return sb.ToString();
     }
 
     private void AssertMap(int Seed, string Expected, string startingMap)
     {
         levelGenerator.SetSeed(Seed);
         Level2D actualMap = levelGenerator.Generate(new Level2D(startingMap));
+        output.WriteLine(actualMap.ToString());
         Assert.Equal(Expected, actualMap.ToString());
     }
 }
