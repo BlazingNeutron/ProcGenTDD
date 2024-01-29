@@ -9,14 +9,13 @@ public class ProcGenLevel
     public Level2D Generate(Level2D startingMap)
     {
         Level2D noise_grid = GenerateNoiseGrid(startingMap);
-        return CelluarAutomaton(noise_grid);
-        //return noise_grid;
+        return CelluarAutomata(noise_grid);
     }
 
-    private static Level2D CelluarAutomaton(Level2D noiseGrid)
+    private static Level2D CelluarAutomata(Level2D noiseGrid)
     {
         var currentGrid = new Level2D(noiseGrid);
-        
+
         while (!IsSolvable(currentGrid))
         {
             for (int x = 0; x < noiseGrid.GetLength(0); x++)

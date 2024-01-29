@@ -6,7 +6,7 @@ using System.Text;
 using procgentest1;
 using Xunit.Abstractions;
 
-public class ProcGenTests
+public class ProcGenTests(ITestOutputHelper output)
 {
     private const int ALL_FLOOR_SEED = 1;
     private const int SHORT_JUMP = 16;
@@ -14,7 +14,8 @@ public class ProcGenTests
     private const int NO_FLOOR_ADD = 0;
     private const int SIMPLE_HIGH_FLOOR = 174;
 
-    readonly ProcGenLevel levelGenerator = new();
+    private readonly ProcGenLevel levelGenerator = new();
+    private readonly ITestOutputHelper output = output;
 
     [Fact]
     public void SimplestLevel()
@@ -71,47 +72,40 @@ public class ProcGenTests
     }
 
     [Fact]
-    public void LargerLevel30Squared()
+    public void LargerLevel30X30()
     {
-        AssertMap(0, 
-            "SF   FF F FFF   FFFF   FFF  F \n"+
-            " F  F FFFF    FF    F F  FFFFF\n"+
-            " FFFFFF   F  FF   F FFFF FF FF\n"+
-            " F     F     F     FF FFFFF FF\n"+
-            "    F FFF FFFFFF  FF  F  FFFFF\n"+
-            "F FFFF F  F     F FFF FFFF  FF\n"+
-            "   F FF  FFF  FF  FFF FF  FF F\n"+
-            " FF   FFFFF F     FF FFF FFFF \n"+
-            "FF F   F   FFF  F FFF F  F  FF\n"+
-            " F FF  FF  F FFF  FF  F F  F F\n"+
-            "F FF  F FF F F      F F     F \n"+
-            "FF  F  FF  F F       F   F  FF\n"+
-            "F F FFF FFF   FFFFF F  FF FF F\n"+
-            " F   F          F   F   FFF  F\n"+
-            "FF  FF  F F F F F    F FFFFFFF\n"+
-            "   FF  F    FF    FFF FF FF   \n"+
-            "F F F FF  FF F F F  FFF   FFF \n"+
-            " F F  FF  F  F FFFFF  F F     \n"+
-            " F      FFFFFFFF    F F  FFF F\n"+
-            " FF F      F F F   F   F F   F\n"+
-            "FF F         F   F  FFF F F FF\n"+
-            " FFFFFF FFFFF  F F F  FFF F  F\n"+
-            "  FF FFF FF FFFFF FF FF F FF F\n"+
-            "    FF F  F F     F F F FFFFFF\n"+
-            "FFF  FFFFFF FFF  F   FF F   F \n"+
-            " F F F FF F  F  FFFF  FFFF FFF\n"+
-            "  FF F   F FFFFFF  FFF F FFFF \n"+
-            "     F FFF FF F FF FF        F\n"+
-            "     FF  F FF  FFFFF F FFF   F\n"+
+        AssertMap(0,
+            "SF   FF F FFF   FFFF   FFF  F \n" +
+            " F  F FFFF    FF    F F  FFFFF\n" +
+            " FFFFFF   F  FF   F FFFF FF FF\n" +
+            " F     F     F     FF FFFFF FF\n" +
+            "    F FFF FFFFFF  FF  F  FFFFF\n" +
+            "F FFFF F  F     F FFF FFFF  FF\n" +
+            "   F FF  FFF  FF  FFF FF  FF F\n" +
+            " FF   FFFFF F     FF FFF FFFF \n" +
+            "FF F   F   FFF  F FFF F  F  FF\n" +
+            " F FF  FF  F FFF  FF  F F  F F\n" +
+            "F FF  F FF F F      F F     F \n" +
+            "FF  F  FF  F F       F   F  FF\n" +
+            "F F FFF FFF   FFFFF F  FF FF F\n" +
+            " F   F          F   F   FFF  F\n" +
+            "FF  FF  F F F F F    F FFFFFFF\n" +
+            "   FF  F    FF    FFF FF FF   \n" +
+            "F F F FF  FF F F F  FFF   FFF \n" +
+            " F F  FF  F  F FFFFF  F F     \n" +
+            " F      FFFFFFFF    F F  FFF F\n" +
+            " FF F      F F F   F   F F   F\n" +
+            "FF F         F   F  FFF F F FF\n" +
+            " FFFFFF FFFFF  F F F  FFF F  F\n" +
+            "  FF FFF FF FFFFF FF FF F FF F\n" +
+            "    FF F  F F     F F F FFFFFF\n" +
+            "FFF  FFFFFF FFF  F   FF F   F \n" +
+            " F F F FF F  F  FFFF  FFFF FFF\n" +
+            "  FF F   F FFFFFF  FFF F FFFF \n" +
+            "     F FFF FF F FF FF        F\n" +
+            "     FF  F FF  FFFFF F FFF   F\n" +
             "   FFFFF   F FFF  FFFFFFFFF  E",
             GenerateEmptyLevel(30, 30, 0, 928));
-    }
-
-    private readonly ITestOutputHelper output;
-
-    public ProcGenTests(ITestOutputHelper output)
-    {
-        this.output = output;
     }
 
     private string GenerateEmptyLevel(int width, int height, int startIndex, int endIndex)
@@ -121,7 +115,6 @@ public class ProcGenTests
         StringBuilder sb = new(emptyLevel);
         sb[startIndex] = 'S';
         sb[endIndex] = 'E';
-        //output.WriteLine(sb.ToString());
         return sb.ToString();
     }
 

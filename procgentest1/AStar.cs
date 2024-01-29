@@ -1,30 +1,29 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 namespace procgentest1
 {
 
-    public class Node
+    public class Node(Vector2 pos)
     {
-        public float Cost;
-        public Vector2 Position;
-
-        public Node(Vector2 pos)
-        {
-            this.Position = pos;
-            this.Cost = 1;
-        }
+        public readonly float Cost = 1;
+        public readonly Vector2 Position = pos;
 
         public override bool Equals(object? obj)
         {
-            // if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-            // {
-            //     return false;
-            // }
-            // else
-            // {
-                Node other = (Node)obj;
-                return other.Position.Equals(this.Position);
-            // }
+            if (obj is not Node other)
+            {
+                return false;
+            }
+            return other.Position.Equals(this.Position);
+        }
+
+        [ExcludeFromCodeCoverageAttribute]
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash = hash * 23 + (int)Cost;
+            return hash * 23 + Position.GetHashCode();
         }
     }
 
@@ -77,7 +76,16 @@ namespace procgentest1
 
         private List<Node> GetNeighbouringNodes(Node current)
         {
-            List<Node> neighbours = new();
+            List<Node> neighbours = [];
+            WalkableNeighbours(current, neighbours);
+            HorizontalJumps(current, neighbours);
+            VerticalJumps(current, neighbours);
+            Falling(current, neighbours);
+            return neighbours;
+        }
+
+        private void WalkableNeighbours(Node current, List<Node> neighbours)
+        {
             if (current.Position.X + 1 < width)
             {
                 neighbours.Add(new(new Vector2(current.Position.X + 1, current.Position.Y)));
@@ -94,18 +102,10 @@ namespace procgentest1
             {
                 neighbours.Add(new(new Vector2(current.Position.X, current.Position.Y - 1)));
             }
-            if (current.Position.X + 2 < width)
-            {
-                neighbours.Add(new(new Vector2(current.Position.X + 2, current.Position.Y)));
-            }
-            if (current.Position.Y - 1 >= 0 && current.Position.X + 1 < width)
-            {
-                neighbours.Add(new(new Vector2(current.Position.X + 1, current.Position.Y - 1)));
-            }
-            if (current.Position.Y - 1 >= 0 && current.Position.X - 1 >= 0)
-            {
-                neighbours.Add(new(new Vector2(current.Position.X - 1, current.Position.Y - 1)));
-            }
+        }
+
+        private void Falling(Node current, List<Node> neighbours)
+        {
             if (current.Position.Y + 1 < height && current.Position.X + 2 < width)
             {
                 neighbours.Add(new(new Vector2(current.Position.X + 2, current.Position.Y + 1)));
@@ -114,7 +114,30 @@ namespace procgentest1
             {
                 neighbours.Add(new(new Vector2(current.Position.X + 2, current.Position.Y + 2)));
             }
-            return neighbours;
+        }
+
+        private void VerticalJumps(Node current, List<Node> neighbours)
+        {
+            if (current.Position.Y - 1 >= 0 && current.Position.X + 1 < width)
+            {
+                neighbours.Add(new(new Vector2(current.Position.X + 1, current.Position.Y - 1)));
+            }
+            if (current.Position.Y - 1 >= 0 && current.Position.X - 1 >= 0)
+            {
+                neighbours.Add(new(new Vector2(current.Position.X - 1, current.Position.Y - 1)));
+            }
+        }
+
+        private void HorizontalJumps(Node current, List<Node> neighbours)
+        {
+            if (current.Position.X + 2 < width)
+            {
+                neighbours.Add(new(new Vector2(current.Position.X + 2, current.Position.Y)));
+            }
+            if (current.Position.X - 2 >= 0)
+            {
+                neighbours.Add(new(new Vector2(current.Position.X - 2, current.Position.Y)));
+            }
         }
     }
 }
