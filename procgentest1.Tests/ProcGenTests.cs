@@ -38,13 +38,13 @@ public class ProcGenTests(ITestOutputHelper output)
     [Fact]
     public void LevelWithAJump()
     {
-        AssertMap(SHORT_JUMP, "SFF E", "S   E");
+        AssertMap(SHORT_JUMP, "S F E", "S   E");
     }
 
     [Fact]
     public void LevelWithALongJump()
     {
-        AssertMap(TOO_LONG_JUMP, "SFFFF E", "S     E");
+        AssertMap(TOO_LONG_JUMP, "SF FF E", "S     E");
     }
 
     [Fact]

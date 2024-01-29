@@ -31,13 +31,13 @@ public class Level2D
         return FindPositionOf(END_SPACE);
     }
 
-    private Vector2 FindPositionOf(string v)
+    private Vector2 FindPositionOf(string value)
     {
         for (int y = 0; y < LevelArray.GetLength(1); y++)
         {
             for (int x = 0; x < LevelArray.GetLength(0); x++)
             {
-                if (LevelArray[x, y] == v)
+                if (LevelArray[x, y] == value)
                 {
                     return new Vector2(x, y);
                 }
@@ -84,33 +84,36 @@ public class Level2D
         return stringMapBuilder.ToString();
     }
 
-    internal bool IsFloor(Vector2 Position)
+    internal bool IsFloor(int x, int y)
     {
-        return GetLevelArrayValue(Position) == FLOOR_SPACE;
+        return LevelArray[x, y] == FLOOR_SPACE || LevelArray[x, y] == START_SPACE || LevelArray[x, y] == END_SPACE;
     }
 
-    internal void SetFloor(Vector2 Position)
+    internal void SetFloor(int x, int y)
     {
-        LevelArray[(int)Position.X, (int)Position.Y] = FLOOR_SPACE;
+        if (LevelArray[x, y] != START_SPACE && LevelArray[x, y] != END_SPACE)
+        {
+            LevelArray[x, y] = FLOOR_SPACE;
+        }
     }
 
-    internal bool IsEmpty(Vector2 Position)
+    internal bool IsEmpty(int x, int y)
     {
-        return GetLevelArrayValue(Position) == EMPTY_SPACE;
+        return LevelArray[x, y] == EMPTY_SPACE;
     }
 
-    private string GetLevelArrayValue(Vector2 Position)
+    internal bool IsEmpty(Vector2 position) => IsEmpty((int)position.X, (int)position.Y);
+
+    internal bool IsStartOrEnd(int x, int y)
     {
-        return LevelArray[(int)Position.X, (int)Position.Y];
+        return LevelArray[x, y] == START_SPACE || LevelArray[x, y] == END_SPACE;
     }
 
-    internal bool IsStartOrEnd(Vector2 Position)
+    internal void SetEmpty(int x, int y)
     {
-        return GetLevelArrayValue(Position) == START_SPACE || GetLevelArrayValue(Position) == END_SPACE;
-    }
-
-    internal void SetEmpty(Vector2 Position)
-    {
-        LevelArray[(int)Position.X, (int)Position.Y] = EMPTY_SPACE;
+        if (LevelArray[x, y] != START_SPACE && LevelArray[x, y] != END_SPACE)
+        {
+            LevelArray[x, y] = EMPTY_SPACE;
+        }
     }
 }
