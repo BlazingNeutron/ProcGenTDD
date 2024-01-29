@@ -52,7 +52,7 @@ namespace procgentest1
 
                 foreach (Node n in neighbours)
                 {
-                    if (!ClosedList.Contains(n) && level.Get((int)n.Position.X, (int)n.Position.Y) != " ")
+                    if (!ClosedList.Contains(n) && !level.IsEmpty(n.Position))
                     {
                         foreach (var (Element, Priority) in OpenList.UnorderedItems)
                         {
@@ -118,13 +118,16 @@ namespace procgentest1
 
         private void VerticalJumps(Node current, List<Node> neighbours)
         {
-            if (current.Position.Y - 1 >= 0 && current.Position.X + 1 < width)
+            if (current.Position.Y - 1 >= 0)
             {
-                neighbours.Add(new(new Vector2(current.Position.X + 1, current.Position.Y - 1)));
-            }
-            if (current.Position.Y - 1 >= 0 && current.Position.X - 1 >= 0)
-            {
-                neighbours.Add(new(new Vector2(current.Position.X - 1, current.Position.Y - 1)));
+                if (current.Position.X + 1 < width)
+                {
+                    neighbours.Add(new(new Vector2(current.Position.X + 1, current.Position.Y - 1)));
+                }
+                if (current.Position.X - 1 >= 0)
+                {
+                    neighbours.Add(new(new Vector2(current.Position.X - 1, current.Position.Y - 1)));
+                }
             }
         }
 
