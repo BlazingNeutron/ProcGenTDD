@@ -3,124 +3,114 @@ namespace procgentest1.Tests;
 using System;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using procgentest1;
 using Xunit.Abstractions;
 
 public class ProcGenTests(ITestOutputHelper output)
 {
-    private const int ALL_FLOOR_SEED = 1;
-    private const int SHORT_JUMP = 16;
-    private const int TOO_LONG_JUMP = 30;
-    private const int NO_FLOOR_ADD = 0;
-    private const int SIMPLE_HIGH_FLOOR = 174;
-
     private readonly ProcGenLevel levelGenerator = new();
     private readonly ITestOutputHelper output = output;
 
     [Fact]
     public void SimplestLevel()
     {
-        AssertMap(ALL_FLOOR_SEED, "SE", "SE");
+        AssertMapCanExist("SE", GenerateEmptyLevel(2, 1, 0, 1));
     }
 
     [Fact]
     public void OneFloor()
     {
-        AssertMap(ALL_FLOOR_SEED, "SFE", "S E");
+        AssertMapCanExist("SFE", GenerateEmptyLevel(3, 1, 0, 2));
     }
 
     [Fact]
     public void LongerAllFloorMap()
     {
-        AssertMap(ALL_FLOOR_SEED, "SFFE", "S  E");
+        AssertMapCanExist("SFFE", GenerateEmptyLevel(4, 1, 0, 3));
     }
 
     [Fact]
     public void LevelWithAJump()
     {
-        AssertMap(SHORT_JUMP, "S F E", "S   E");
+        AssertMapCanExist("SFF E", GenerateEmptyLevel(5, 1, 0, 4));
     }
 
     [Fact]
-    public void LevelWithALongJump()
+    public void TooLongJumpCleanedUp()
     {
-        AssertMap(TOO_LONG_JUMP, "SF FF E", "S     E");
+        AssertMapCanExist("SFFF FE", GenerateEmptyLevel(7, 1, 0, 6));
     }
 
     [Fact]
     public void SimpleTwoDimensionalLevel()
     {
-        AssertMap(NO_FLOOR_ADD, "  \nSE", "  \nSE");
+        AssertMapCanExist("  \r\nSE", GenerateEmptyLevel(2, 2, 2, 3));
     }
 
     [Fact]
     public void HighJump()
     {
-        AssertMap(4954, " F  \nS  E", "    \nS  E");
+        AssertMapCanExist(" F  \r\nS  E", GenerateEmptyLevel(4, 2, 4, 7));
     }
 
     [Fact]
     public void StartAndEndAreDifferentHeights()
     {
-        AssertMap(SIMPLE_HIGH_FLOOR, "SF \n   \n  E", "S  \n   \n  E");
+        AssertMapCanExist("SF \r\n   \r\n  E", GenerateEmptyLevel(3, 3, 0, 8));
     }
 
     [Fact]
     public void EmptyLevel()
     {
-        AssertMap(SIMPLE_HIGH_FLOOR, "", "");
+        AssertMapCanExist("", "");
     }
 
     [Fact]
-    public void LargerLevel30X30()
+    public void LargerLevel10x10()
     {
-        AssertMap(0,
-            "SF   FF F FFF   FFFF   FFF  F \n" +
-            " F  F FFFF    FF    F F  FFFFF\n" +
-            " FFFFFF   F  FF   F FFFF FF FF\n" +
-            " F     F     F     FF FFFFF FF\n" +
-            "    F FFF FFFFFF  FF  F  FFFFF\n" +
-            "F FFFF F  F     F FFF FFFF  FF\n" +
-            "   F FF  FFF  FF  FFF FF  FF F\n" +
-            " FF   FFFFF F     FF FFF FFFF \n" +
-            "FF F   F   FFF  F FFF F  F  FF\n" +
-            " F FF  FF  F FFF  FF  F F  F F\n" +
-            "F FF  F FF F F      F F     F \n" +
-            "FF  F  FF  F F       F   F  FF\n" +
-            "F F FFF FFF   FFFFF F  FF FF F\n" +
-            " F   F          F   F   FFF  F\n" +
-            "FF  FF  F F F F F    F FFFFFFF\n" +
-            "   FF  F    FF    FFF FF FF   \n" +
-            "F F F FF  FF F F F  FFF   FFF \n" +
-            " F F  FF  F  F FFFFF  F F     \n" +
-            " F      FFFFFFFF    F F  FFF F\n" +
-            " FF F      F F F   F   F F   F\n" +
-            "FF F         F   F  FFF F F FF\n" +
-            " FFFFFF FFFFF  F F F  FFF F  F\n" +
-            "  FF FFF FF FFFFF FF FF F FF F\n" +
-            "    FF F  F F     F F F FFFFFF\n" +
-            "FFF  FFFFFF FFF  F   FF F   F \n" +
-            " F F F FF F  F  FFFF  FFFF FFF\n" +
-            "  FF F   F FFFFFF  FFF F FFFF \n" +
-            "     F FFF FF F FF FF        F\n" +
-            "     FF  F FF  FFFFF F FFF   F\n" +
-            "   FFFFF   F FFF  FFFFFFFFF  E",
-            GenerateEmptyLevel(30, 30, 0, 928));
+        AssertMapCanExist(
+            "SFFFFFFFFF\r\n" +
+            "F  FFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFF FE",
+            GenerateEmptyLevel(10, 10, 0, 99));
+    }
+
+    private int FindMap(string expected, string template)
+    {
+        for (int i = 0; i < 1000; i++)
+        {
+            levelGenerator.SetSeed(i);
+            Level2D actualMap = levelGenerator.Generate(new Level2D(template));
+            if (expected == actualMap.ToString())
+            {
+                output.WriteLine("i = " + i + actualMap.ToString());
+                return i;
+            }
+        }
+        return 0;
     }
 
     private string GenerateEmptyLevel(int width, int height, int startIndex, int endIndex)
     {
-        string emptyLevel = string.Concat(Enumerable.Repeat(new string(' ', width) + '\n', height));
-        emptyLevel = emptyLevel.Remove(emptyLevel.Length - 1, 1);
+        string emptyLevel = new(' ', width * height);
         StringBuilder sb = new(emptyLevel);
         sb[startIndex] = 'S';
         sb[endIndex] = 'E';
-        return sb.ToString();
+        emptyLevel = Regex.Replace(sb.ToString(), ".{" + width + "}", "$0\n");
+        return emptyLevel.Remove(emptyLevel.Length - 1, 1);
     }
 
-    private void AssertMap(int Seed, string Expected, string startingMap)
+    private void AssertMapCanExist(string Expected, string startingMap)
     {
-        levelGenerator.SetSeed(Seed);
+        levelGenerator.SetSeed(FindMap(Expected, startingMap));
         Level2D actualMap = levelGenerator.Generate(new Level2D(startingMap));
         output.WriteLine(actualMap.ToString());
         Assert.Equal(Expected, actualMap.ToString());

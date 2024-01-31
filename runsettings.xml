@@ -34,6 +34,7 @@
                 <Source>.*\\public\\sdk\\.*</Source>
                 <Source>.*\\microsoft sdks\\.*</Source>
                 <Source>.*\\vc\\include\\.*</Source>
+                <Source>.*procgentest1.Tests.*</Source>
             </Exclude>
         </Sources>
 

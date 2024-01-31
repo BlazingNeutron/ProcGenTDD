@@ -7,7 +7,7 @@ tests-only:
 	dotnet test
 
 tests-coverage: tests-only
-	dotnet dotnet-coverage collect -s coverage-settings.xml -f cobertura dotnet test
+	dotnet dotnet-coverage collect -s runsettings.xml -f cobertura dotnet test
 	dotnet reportgenerator -reports:"output.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html
 
 tests-report:

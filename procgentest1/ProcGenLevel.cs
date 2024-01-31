@@ -7,8 +7,8 @@ public class ProcGenLevel
 
     public ProcGenLevel()
     {
-        Density = 50;
-        NumberOfSteps = 20;
+        Density = 40;
+        NumberOfSteps = 10;
     }
 
     private int Density { get; set; }
@@ -29,38 +29,20 @@ public class ProcGenLevel
         return lastSolvableMap;
     }
 
-    private static Level2D CelluarAutomata(Level2D NoiseGrid)
+    private Level2D CelluarAutomata(Level2D NoiseGrid)
     {
         Level2D CurrentGrid = new(NoiseGrid);
-        int deathLimit = NoiseGrid.GetLength(1) == 1 ? 8 : 4;
-        int birthLimit = NoiseGrid.GetLength(1) == 1 ? 6 : 7;
-
         for (int x = 0; x < NoiseGrid.GetLength(0); x++)
         {
             for (int y = 0; y < NoiseGrid.GetLength(1); y++)
             {
-                int neighbourCount = CountAliveNeighbours(NoiseGrid, x, y);
-                if (NoiseGrid.IsFloor(x, y))
+                if (random.Next(0, 99) < ProbabilityOfFloor(NoiseGrid, x, y))
                 {
-                    if (neighbourCount < deathLimit)
-                    {
-                        CurrentGrid.SetEmpty(x, y);
-                    }
-                    else
-                    {
-                        CurrentGrid.SetFloor(x, y);
-                    }
+                    CurrentGrid.SetFloor(x, y);
                 }
                 else
                 {
-                    if (neighbourCount > birthLimit)
-                    {
-                        CurrentGrid.SetFloor(x, y);
-                    }
-                    else
-                    {
-                        CurrentGrid.SetEmpty(x, y);
-                    }
+                    CurrentGrid.SetEmpty(x, y);
                 }
             }
         }
@@ -68,38 +50,33 @@ public class ProcGenLevel
         return CurrentGrid;
     }
 
-    private static int CountAliveNeighbours(Level2D noiseGrid, int x, int y)
+    private static int ProbabilityOfFloor(Level2D noiseGrid, int x, int y)
     {
+        if (noiseGrid.IsStartOrEnd(x, y))
+        {
+            return 100;
+        }
         int count = 0;
-        for (int i=-1; i<2; i++)
+        for (int i=-2; i<3; i++)
         {
             for (int j=-1; j<2; j++)
             {
                 int neighbourX = x+i;
                 int neighbourY = y+j;
                 if (i==0 && j==0) continue;
-                if (neighbourX < 0 || neighbourY < 0 || neighbourX >= noiseGrid.GetLength(0) || neighbourY >= noiseGrid.GetLength(1))
-                {
-                    count++;
-                }
-                else if (noiseGrid.IsFloor(neighbourX, neighbourY))
+                if (!(neighbourX < 0 || neighbourY < 0 || neighbourX >= noiseGrid.GetLength(0) || neighbourY >= noiseGrid.GetLength(1)) && noiseGrid.IsFloor(neighbourX, neighbourY))
                 {
                     count++;
                 }
             }
         }
-        return count;
+
+        return Math.Max(0, 100 - (count * 25));
     }
 
     private static bool IsSolvable(Level2D CurrentGrid)
     {
         return new AStar().FindPath(CurrentGrid);
-    }
-
-    private static bool IsTheJumpLongerThanPlayerCanJump(Level2D NoiseGrid, int x, int y)
-    {
-        return x > 1 && NoiseGrid.IsEmpty(x - 1, y)
-            && NoiseGrid.IsEmpty(x, y);
     }
 
     private Level2D GenerateNoiseGrid(Level2D startingMap)

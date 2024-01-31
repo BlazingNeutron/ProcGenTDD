@@ -78,7 +78,7 @@ public class Level2D
             }
             if (y + 1 < LevelArray.GetLength(1))
             {
-                stringMapBuilder.Append('\n');
+                stringMapBuilder.Append("\r\n");
             }
         }
         return stringMapBuilder.ToString();
@@ -86,12 +86,12 @@ public class Level2D
 
     internal bool IsFloor(int x, int y)
     {
-        return LevelArray[x, y] == FLOOR_SPACE || LevelArray[x, y] == START_SPACE || LevelArray[x, y] == END_SPACE;
+        return LevelArray[x, y] == FLOOR_SPACE || IsStartOrEnd(x, y);
     }
 
     internal void SetFloor(int x, int y)
     {
-        if (LevelArray[x, y] != START_SPACE && LevelArray[x, y] != END_SPACE)
+        if (!IsStartOrEnd(x, y))
         {
             LevelArray[x, y] = FLOOR_SPACE;
         }
@@ -111,7 +111,7 @@ public class Level2D
 
     internal void SetEmpty(int x, int y)
     {
-        if (LevelArray[x, y] != START_SPACE && LevelArray[x, y] != END_SPACE)
+        if (!IsStartOrEnd(x, y))
         {
             LevelArray[x, y] = EMPTY_SPACE;
         }

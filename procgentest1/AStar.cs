@@ -11,11 +11,8 @@ namespace procgentest1
 
         public override bool Equals(object? obj)
         {
-            if (obj is not Node other)
-            {
-                return false;
-            }
-            return other.Position.Equals(this.Position);
+            Node? other = obj as Node;
+            return this.Position.Equals(other.Position);
         }
 
         [ExcludeFromCodeCoverageAttribute]
@@ -106,13 +103,20 @@ namespace procgentest1
 
         private void Falling(Node current, List<Node> neighbours)
         {
-            if (current.Position.Y + 1 < height && current.Position.X + 2 < width)
+            int StartOfFallY = (int)(current.Position.Y + 1);
+            int maxY = (height - 1) - StartOfFallY;
+            for (int y = StartOfFallY; y < maxY; y++)
             {
-                neighbours.Add(new(new Vector2(current.Position.X + 2, current.Position.Y + 1)));
-            }
-            if (current.Position.Y + 2 < height && current.Position.X + 2 < width)
-            {
-                neighbours.Add(new(new Vector2(current.Position.X + 2, current.Position.Y + 2)));
+                float diff = Math.Abs(current.Position.Y - y);
+                int maxX = Math.Min(width - 1, (int)((diff/2f) + 2f));
+                int minX = Math.Max(0, (int)((diff/-2f) - 2f));
+                for (int x = minX; x < maxX; x++)
+                {
+                    if (current.Position.X + x < width && current.Position.Y + y < height)
+                    {
+                        neighbours.Add(new(new Vector2(current.Position.X + x, current.Position.Y + y)));
+                    }
+                }
             }
         }
 
