@@ -2,78 +2,107 @@ namespace procgentest1;
 
 public class ProcGenLevel
 {
-    private const string EMPTY_SPACE = " ";
-    private const string FLOOR_SPACE = "F";
+
     private Random random = new();
 
-    public Level2D Generate(Level2D startingMap)
+    public ProcGenLevel()
     {
-        Level2D noise_grid = GenerateNoiseGrid(startingMap);
-        return CelluarAutomaton(noise_grid);
-        //return noise_grid;
+        Density = 40;
+        NumberOfSteps = 10;
     }
 
-    private static Level2D CelluarAutomaton(Level2D noiseGrid)
+    private int Density { get; set; }
+    private int NumberOfSteps { get; set; }
+
+    public Level2D Generate(Level2D StartingMap)
     {
-        var currentGrid = new Level2D(noiseGrid);
-        
-        while (!IsSolvable(currentGrid))
+        Level2D CelluarMap = GenerateNoiseGrid(StartingMap);
+        Level2D lastSolvableMap = CelluarMap;
+        for (int currentStep = 0; currentStep < NumberOfSteps; currentStep++)
         {
-            for (int x = 0; x < noiseGrid.GetLength(0); x++)
+            CelluarMap = CelluarAutomata(CelluarMap);
+            if (IsSolvable(CelluarMap))
             {
-                for (int y = 0; y < noiseGrid.GetLength(1); y++)
+                lastSolvableMap = CelluarMap;
+            }
+        }
+        return lastSolvableMap;
+    }
+
+    private Level2D CelluarAutomata(Level2D NoiseGrid)
+    {
+        Level2D CurrentGrid = new(NoiseGrid);
+        for (int x = 0; x < NoiseGrid.GetLength(0); x++)
+        {
+            for (int y = 0; y < NoiseGrid.GetLength(1); y++)
+            {
+                if (random.Next(0, 99) < ProbabilityOfFloor(NoiseGrid, x, y))
                 {
-                    if (IsTheJumpLongerThanPlayerCanJump(noiseGrid, x, y))
-                    {
-                        currentGrid.Set(x - 1, y, FLOOR_SPACE);
-                    }
+                    CurrentGrid.SetFloor(x, y);
+                }
+                else
+                {
+                    CurrentGrid.SetEmpty(x, y);
                 }
             }
         }
 
-        return currentGrid;
+        return CurrentGrid;
     }
 
-    private static bool IsSolvable(Level2D currentGrid)
+    private static int ProbabilityOfFloor(Level2D noiseGrid, int x, int y)
     {
-        return new AStar().FindPath(currentGrid);
+        if (noiseGrid.IsStartOrEnd(x, y))
+        {
+            return 100;
+        }
+        int count = 0;
+        for (int i=-2; i<3; i++)
+        {
+            for (int j=-1; j<2; j++)
+            {
+                int neighbourX = x+i;
+                int neighbourY = y+j;
+                if (i==0 && j==0) continue;
+                if (!(neighbourX < 0 || neighbourY < 0 || neighbourX >= noiseGrid.GetLength(0) || neighbourY >= noiseGrid.GetLength(1)) && noiseGrid.IsFloor(neighbourX, neighbourY))
+                {
+                    count++;
+                }
+            }
+        }
+
+        return Math.Max(0, 100 - (count * 25));
     }
 
-    private static bool IsTheJumpLongerThanPlayerCanJump(Level2D noise_grid, int x, int y)
+    private static bool IsSolvable(Level2D CurrentGrid)
     {
-        return x > 1 && noise_grid.Get(x - 1, y) == EMPTY_SPACE
-            && noise_grid.Get(x, y) == EMPTY_SPACE;
+        return new AStar().FindPath(CurrentGrid);
     }
 
     private Level2D GenerateNoiseGrid(Level2D startingMap)
     {
-        Level2D noise_grid = new(startingMap);
+        Level2D NoiseGrid = new(startingMap);
         for (int x = 0; x < startingMap.GetLength(0); x++)
         {
             for (int y = 0; y < startingMap.GetLength(1); y++)
             {
-                if (IsThisTheStartOrEnd(noise_grid.Get(x, y)))
+                if (NoiseGrid.IsStartOrEnd(x, y))
                 {
                     continue;
                 }
                 int noise = random.Next(0, 99);
-                if (noise > 50)
+                if (noise > Density)
                 {
-                    noise_grid.Set(x, y, EMPTY_SPACE);
+                    NoiseGrid.SetEmpty(x, y);
                 }
                 else
                 {
-                    noise_grid.Set(x, y, FLOOR_SPACE);
+                    NoiseGrid.SetFloor(x, y);
                 }
             }
         }
 
-        return noise_grid;
-    }
-
-    private static bool IsThisTheStartOrEnd(string gridValue)
-    {
-        return gridValue == "S" || gridValue == "E";
+        return NoiseGrid;
     }
 
     public void SetSeed(int seed)

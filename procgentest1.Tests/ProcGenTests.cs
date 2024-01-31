@@ -1,78 +1,118 @@
 namespace procgentest1.Tests;
 
 using System;
+using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using procgentest1;
 using Xunit.Abstractions;
 
-public class ProcGenTests()
+public class ProcGenTests(ITestOutputHelper output)
 {
-    private const int ALL_FLOOR_SEED = 1;
-    private const int SHORT_JUMP = 16;
-    private const int TOO_LONG_JUMP = 30;
-    private const int NO_FLOOR_ADD = 0;
-    private const int SIMPLE_HIGH_FLOOR = 174;
-
-    readonly ProcGenLevel levelGenerator = new();
+    private readonly ProcGenLevel levelGenerator = new();
+    private readonly ITestOutputHelper output = output;
 
     [Fact]
     public void SimplestLevel()
     {
-        AssertMap(ALL_FLOOR_SEED, "SE", "SE");
+        AssertMapCanExist("SE", GenerateEmptyLevel(2, 1, 0, 1));
     }
 
     [Fact]
     public void OneFloor()
     {
-        AssertMap(ALL_FLOOR_SEED, "SFE", "S E");
+        AssertMapCanExist("SFE", GenerateEmptyLevel(3, 1, 0, 2));
     }
 
     [Fact]
     public void LongerAllFloorMap()
     {
-        AssertMap(ALL_FLOOR_SEED, "SFFE", "S  E");
+        AssertMapCanExist("SFFE", GenerateEmptyLevel(4, 1, 0, 3));
     }
 
     [Fact]
     public void LevelWithAJump()
     {
-        AssertMap(SHORT_JUMP, "SFF E", "S   E");
+        AssertMapCanExist("SFF E", GenerateEmptyLevel(5, 1, 0, 4));
     }
 
     [Fact]
-    public void LevelWithALongJump()
+    public void TooLongJumpCleanedUp()
     {
-        AssertMap(TOO_LONG_JUMP, "SFFFF E", "S     E");
+        AssertMapCanExist("SFFF FE", GenerateEmptyLevel(7, 1, 0, 6));
     }
 
     [Fact]
     public void SimpleTwoDimensionalLevel()
     {
-        AssertMap(NO_FLOOR_ADD, "  \nSE", "  \nSE");
+        AssertMapCanExist("  \r\nSE", GenerateEmptyLevel(2, 2, 2, 3));
     }
 
     [Fact]
     public void HighJump()
     {
-        AssertMap(4954, " F  \nS  E", "    \nS  E");
+        AssertMapCanExist(" F  \r\nS  E", GenerateEmptyLevel(4, 2, 4, 7));
     }
 
     [Fact]
     public void StartAndEndAreDifferentHeights()
     {
-        AssertMap(SIMPLE_HIGH_FLOOR, "SF \n   \n  E", "S  \n   \n  E");
+        AssertMapCanExist("SF \r\n   \r\n  E", GenerateEmptyLevel(3, 3, 0, 8));
     }
 
     [Fact]
     public void EmptyLevel()
     {
-        AssertMap(SIMPLE_HIGH_FLOOR, "", "");
+        AssertMapCanExist("", "");
     }
 
-    private void AssertMap(int Seed, string Expected, string startingMap)
+    [Fact]
+    public void LargerLevel10x10()
     {
-        levelGenerator.SetSeed(Seed);
+        AssertMapCanExist(
+            "SFFFFFFFFF\r\n" +
+            "F  FFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFFFFF\r\n" +
+            "FFFFFFF FE",
+            GenerateEmptyLevel(10, 10, 0, 99));
+    }
+
+    private int FindMap(string expected, string template)
+    {
+        for (int i = 0; i < 1000; i++)
+        {
+            levelGenerator.SetSeed(i);
+            Level2D actualMap = levelGenerator.Generate(new Level2D(template));
+            if (expected == actualMap.ToString())
+            {
+                output.WriteLine("i = " + i + actualMap.ToString());
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    private string GenerateEmptyLevel(int width, int height, int startIndex, int endIndex)
+    {
+        string emptyLevel = new(' ', width * height);
+        StringBuilder sb = new(emptyLevel);
+        sb[startIndex] = 'S';
+        sb[endIndex] = 'E';
+        emptyLevel = Regex.Replace(sb.ToString(), ".{" + width + "}", "$0\n");
+        return emptyLevel.Remove(emptyLevel.Length - 1, 1);
+    }
+
+    private void AssertMapCanExist(string Expected, string startingMap)
+    {
+        levelGenerator.SetSeed(FindMap(Expected, startingMap));
         Level2D actualMap = levelGenerator.Generate(new Level2D(startingMap));
+        output.WriteLine(actualMap.ToString());
         Assert.Equal(Expected, actualMap.ToString());
     }
 }

@@ -1,14 +1,19 @@
-run-tests: test test-coverage test-coverage-report
+build: tests-only tests-coverage
+	dotnet build
 
-test:
+tests: tests-only tests-coverage tests-report
+
+tests-only:
 	dotnet test
 
-test-coverage:
-	dotnet dotnet-coverage collect -s coverage-settings.xml -f cobertura dotnet test
+tests-coverage: tests-only
+	dotnet dotnet-coverage collect -s runsettings.xml -f cobertura dotnet test
 	dotnet reportgenerator -reports:"output.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html
 
-test-coverage-report:
+tests-report:
 	python3 -m http.server -d coveragereport/
 
-test-coverage-report-stop:
+clean:
+	rm -rf coveragereport/
+	rm output.cobertura.xml
 	pkill -f "python3 -m http.server"
