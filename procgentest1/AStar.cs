@@ -45,7 +45,7 @@ namespace procgentest1
             {
                 current = OpenList.Dequeue();
                 ClosedList.Add(current);
-                neighbours = GetNeighbouringNodes(current);
+                neighbours = GetNeighbouringNodes(current, level);
 
                 foreach (Node n in neighbours)
                 {
@@ -71,13 +71,13 @@ namespace procgentest1
             return true;
         }
 
-        private List<Node> GetNeighbouringNodes(Node current)
+        private List<Node> GetNeighbouringNodes(Node current, Level2D level)
         {
             List<Node> neighbours = [];
             WalkableNeighbours(current, neighbours);
             HorizontalJumps(current, neighbours);
             VerticalJumps(current, neighbours);
-            Falling(current, neighbours);
+            Falling(current, neighbours, level);
             return neighbours;
         }
 
@@ -91,32 +91,47 @@ namespace procgentest1
             {
                 neighbours.Add(new(new Vector2(current.Position.X - 1, current.Position.Y)));
             }
-            if (current.Position.Y + 1 < height)
+        }
+
+        private void Falling(Node current, List<Node> neighbours, Level2D level)
+        {
+            if (current.Position.X + 1 < width)
             {
-                neighbours.Add(new(new Vector2(current.Position.X, current.Position.Y + 1)));
+                KeepFalling(new(new(current.Position.X + 1, current.Position.Y)), neighbours, level);
             }
-            if (current.Position.Y - 1 >= 0)
+            KeepFalling(new(new(current.Position.X, current.Position.Y)), neighbours, level);
+            if (current.Position.X - 1 >= 0)
             {
-                neighbours.Add(new(new Vector2(current.Position.X, current.Position.Y - 1)));
+                KeepFalling(new(new(current.Position.X - 1, current.Position.Y)), neighbours, level);
             }
         }
 
-        private void Falling(Node current, List<Node> neighbours)
+        private void KeepFalling(Node current, List<Node> neighbours, Level2D level)
         {
-            int StartOfFallY = (int)(current.Position.Y + 1);
-            int maxY = (height - 1) - StartOfFallY;
-            for (int y = StartOfFallY; y < maxY; y++)
+            if (current.Position.X >= width || current.Position.X < 0 ||
+                current.Position.Y > height || current.Position.Y < 0)
             {
-                float diff = Math.Abs(current.Position.Y - y);
-                int maxX = Math.Min(width - 1, (int)((diff/2f) + 2f));
-                int minX = Math.Max(0, (int)((diff/-2f) - 2f));
-                for (int x = minX; x < maxX; x++)
+                return;
+            }
+            if (!level.IsEmpty(current.Position))
+            {
+                return;
+            }
+
+            if (current.Position.Y + 1 < height)
+            {
+                if (current.Position.X + 1 < width)
                 {
-                    if (current.Position.X + x < width && current.Position.Y + y < height)
-                    {
-                        neighbours.Add(new(new Vector2(current.Position.X + x, current.Position.Y + y)));
-                    }
+                    neighbours.Add(new(new Vector2(current.Position.X + 1, current.Position.Y + 1)));
+                    KeepFalling(new(new(current.Position.X + 1, current.Position.Y + 1)), neighbours, level);
                 }
+                if (current.Position.X - 1 >= 0)
+                {
+                    neighbours.Add(new(new Vector2(current.Position.X - 1, current.Position.Y + 1)));
+                    KeepFalling(new(new(current.Position.X - 1, current.Position.Y + 1)), neighbours, level);
+                }
+                neighbours.Add(new(new Vector2(current.Position.X, current.Position.Y + 1)));
+                KeepFalling(new(new(current.Position.X, current.Position.Y + 1)), neighbours, level);
             }
         }
 
@@ -132,6 +147,7 @@ namespace procgentest1
                 {
                     neighbours.Add(new(new Vector2(current.Position.X - 1, current.Position.Y - 1)));
                 }
+                neighbours.Add(new(new Vector2(current.Position.X, current.Position.Y - 1)));
             }
         }
 

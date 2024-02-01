@@ -67,22 +67,23 @@ public class ProcGenTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void LargerLevel10x10()
+    public void Falling()
     {
         AssertMapCanExist(
-            "SFFFFFFFFF\r\n" +
-            "F  FFFFFFF\r\n" +
-            "FFFFFFFFFF\r\n" +
-            "FFFFFFFFFF\r\n" +
-            "FFFFFFFFFF\r\n" +
-            "FFFFFFFFFF\r\n" +
-            "FFFFFFFFFF\r\n" +
-            "FFFFFFFFFF\r\n" +
-            "FFFFFFFFFF\r\n" +
-            "FFFFFFF FE",
-            GenerateEmptyLevel(10, 10, 0, 99));
+            "SF FFF\r\n"+
+            "F F F \r\n"+
+            "FFFF E",
+            GenerateEmptyLevel(6, 3, 0, 17));
     }
 
+    [Fact]
+    public void FallingJump()
+    {
+        AssertMapCanExist(
+            "SF   \r\n" +
+            "   FE",
+            GenerateEmptyLevel(5, 2, 0, 9));
+    }
     private int FindMap(string expected, string template)
     {
         for (int i = 0; i < 1000; i++)

@@ -16,8 +16,8 @@ public class ProcGenLevel
 
     public Level2D Generate(Level2D StartingMap)
     {
+        Level2D lastSolvableMap = new("");
         Level2D CelluarMap = GenerateNoiseGrid(StartingMap);
-        Level2D lastSolvableMap = CelluarMap;
         for (int currentStep = 0; currentStep < NumberOfSteps; currentStep++)
         {
             CelluarMap = CelluarAutomata(CelluarMap);
