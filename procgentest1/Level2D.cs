@@ -11,13 +11,14 @@ public class Level2D
     private const string END_SPACE = "E";
     public Level2D(Level2D otherLevel)
     {
-        LevelArray = new string[otherLevel.GetLength(0), otherLevel.GetLength(1)];
-        Array.Copy(otherLevel.LevelArray, LevelArray, otherLevel.GetLength(0) * otherLevel.GetLength(1));
+        LevelArray = new string[otherLevel.GetWidth(), otherLevel.GetHeight()];
+        Array.Copy(otherLevel.LevelArray, LevelArray, otherLevel.GetWidth() * otherLevel.GetHeight());
     }
 
     public Level2D(string levelAsString) => ConvertStringMapTo2DArray(levelAsString);
 
-    public int GetLength(int direction = 0) => LevelArray.GetLength(direction);
+    public int GetWidth() => LevelArray.GetLength(0);
+    public int GetHeight() => LevelArray.GetLength(1);
 
     override public string ToString() => Convert2DArrayToStringMap();
 
@@ -115,5 +116,15 @@ public class Level2D
         {
             LevelArray[x, y] = EMPTY_SPACE;
         }
+    }
+
+    public bool IsWithinBounds(int x, int y)
+    {
+        return x >= 0 && y >= 0 && x < LevelArray.GetLength(0) && y < LevelArray.GetLength(1);
+    }
+
+    public bool IsWithinBounds(Vector2 Position)
+    {
+        return IsWithinBounds((int)Position.X, (int)Position.Y);
     }
 }

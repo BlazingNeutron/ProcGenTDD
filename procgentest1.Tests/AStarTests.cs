@@ -25,4 +25,12 @@ public class AStarTests()
     {
         Assert.False(PathFinder.FindPath(new("S  E")));
     }
+
+    [Fact]
+    public void PlayerExtraFall()
+    {
+        Assert.True(PathFinder.FindPath(new("SFF   \n" +
+                                            "      \n" +
+                                            "  FFFE")));
+    }
 }

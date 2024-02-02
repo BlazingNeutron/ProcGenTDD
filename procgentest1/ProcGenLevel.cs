@@ -32,9 +32,9 @@ public class ProcGenLevel
     private Level2D CelluarAutomata(Level2D NoiseGrid)
     {
         Level2D CurrentGrid = new(NoiseGrid);
-        for (int x = 0; x < NoiseGrid.GetLength(0); x++)
+        for (int x = 0; x < NoiseGrid.GetWidth(); x++)
         {
-            for (int y = 0; y < NoiseGrid.GetLength(1); y++)
+            for (int y = 0; y < NoiseGrid.GetHeight(); y++)
             {
                 if (random.Next(0, 99) < ProbabilityOfFloor(NoiseGrid, x, y))
                 {
@@ -50,28 +50,47 @@ public class ProcGenLevel
         return CurrentGrid;
     }
 
-    private static int ProbabilityOfFloor(Level2D noiseGrid, int x, int y)
+    private static int ProbabilityOfFloor(Level2D NoiseGrid, int x, int y)
     {
-        if (noiseGrid.IsStartOrEnd(x, y))
+        if (NoiseGrid.IsStartOrEnd(x, y))
         {
             return 100;
         }
-        int count = 0;
-        for (int i = -2; i < 3; i++)
+        if (NoiseGrid.IsFloor(x, y))
         {
-            for (int j = -1; j < 2; j++)
+            if (DirectlyAboveOrBelowFloor(NoiseGrid, x, y))
             {
-                int neighbourX = x + i;
-                int neighbourY = y + j;
-                if (i == 0 && j == 0) continue;
-                if (!(neighbourX < 0 || neighbourY < 0 || neighbourX >= noiseGrid.GetLength(0) || neighbourY >= noiseGrid.GetLength(1)) && noiseGrid.IsFloor(neighbourX, neighbourY))
-                {
-                    count++;
-                }
+                return 20;
+            }
+            if (BetweenFloors(NoiseGrid, x, y))
+            {
+                return 50;
+            }
+            if (BesideOneFloor(NoiseGrid, x, y))
+            {
+                return 25;
             }
         }
 
-        return Math.Max(0, 100 - (count * 25));
+        return 50;
+    }
+
+    private static bool BesideOneFloor(Level2D noiseGrid, int x, int y)
+    {
+        return (noiseGrid.IsWithinBounds(x + 1, y) && noiseGrid.IsFloor(x + 1, y)) ||
+            (noiseGrid.IsWithinBounds(x - 1, y) && noiseGrid.IsFloor(x - 1, y));
+    }
+
+    private static bool BetweenFloors(Level2D noiseGrid, int x, int y)
+    {
+        return noiseGrid.IsWithinBounds(x + 1, y) && noiseGrid.IsFloor(x + 1, y) &&
+            noiseGrid.IsWithinBounds(x - 1, y) && noiseGrid.IsFloor(x - 1, y);
+    }
+
+    private static bool DirectlyAboveOrBelowFloor(Level2D NoiseGrid, int x, int y)
+    {
+        return (NoiseGrid.IsWithinBounds(x, y - 1) && NoiseGrid.IsFloor(x, y - 1)) ||
+            (NoiseGrid.IsWithinBounds(x, y + 1) && NoiseGrid.IsFloor(x, y + 1));
     }
 
     private static bool IsSolvable(Level2D CurrentGrid)
@@ -82,9 +101,9 @@ public class ProcGenLevel
     private Level2D GenerateNoiseGrid(Level2D startingMap)
     {
         Level2D NoiseGrid = new(startingMap);
-        for (int x = 0; x < startingMap.GetLength(0); x++)
+        for (int x = 0; x < startingMap.GetWidth(); x++)
         {
-            for (int y = 0; y < startingMap.GetLength(1); y++)
+            for (int y = 0; y < startingMap.GetHeight(); y++)
             {
                 if (NoiseGrid.IsStartOrEnd(x, y))
                 {
