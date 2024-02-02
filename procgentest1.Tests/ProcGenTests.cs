@@ -92,13 +92,23 @@ public class ProcGenTests(ITestOutputHelper output)
             GenerateEmptyLevel(4, 3, 0, 11));
     }
 
+    [Fact]
+    public void SomeInescapeableAreasAreRemoved()
+    {
+        AssertMapCannotExist(
+            "SF    \r\n" +
+            "   FFE\r\n" +
+            "FF    ",
+            GenerateEmptyLevel(6, 3, 0, 11));
+    }
+
     /**
      * FindMap - finds a random seed with the expected map, if possible to generate.
      *   This is a "temporary" method while new proc gen rules are introduced and tweaked.
      */
     private int FindMap(string expected, string template)
     {
-        for (int i = 0; i < 2000; i++)
+        for (int i = 0; i < 10000; i++)
         {
             levelGenerator.SetSeed(i);
             Level2D actualMap = levelGenerator.Generate(new Level2D(template));
@@ -108,8 +118,7 @@ public class ProcGenTests(ITestOutputHelper output)
                 return i;
             }
         }
-        Assert.Fail("Map Cannot be generated");
-        return 0;
+        return -1;
     }
 
     private string GenerateEmptyLevel(int width, int height, int startIndex, int endIndex)
@@ -128,5 +137,10 @@ public class ProcGenTests(ITestOutputHelper output)
         Level2D actualMap = levelGenerator.Generate(new Level2D(startingMap));
         output.WriteLine(actualMap.ToString());
         Assert.Equal(Expected, actualMap.ToString());
+    }
+
+    private void AssertMapCannotExist(String expected, string startingMap)
+    {
+        Assert.Equal(-1, FindMap(expected, startingMap));
     }
 }

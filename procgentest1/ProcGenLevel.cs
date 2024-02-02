@@ -21,12 +21,21 @@ public class ProcGenLevel
         for (int currentStep = 0; currentStep < NumberOfSteps; currentStep++)
         {
             CelluarMap = CelluarAutomata(CelluarMap);
-            if (IsSolvable(CelluarMap))
+            if (IsSolvable(CelluarMap) && IsEscapeable(CelluarMap))
             {
                 lastSolvableMap = CelluarMap;
             }
+            else
+            {
+                currentStep--;
+            }
         }
         return lastSolvableMap;
+    }
+
+    private bool IsEscapeable(Level2D celluarMap)
+    {
+        return new AStar().FindPathFromAll(celluarMap);
     }
 
     private Level2D CelluarAutomata(Level2D NoiseGrid)
@@ -69,6 +78,13 @@ public class ProcGenLevel
             if (BesideOneFloor(NoiseGrid, x, y))
             {
                 return 25;
+            }
+            AStar aStar = new();
+            Node end = new(NoiseGrid.EndPosition());
+            Node start = new(new System.Numerics.Vector2(x, y));
+            if (!aStar.FindPath(NoiseGrid, start, end))
+            {
+                return 0;
             }
         }
 

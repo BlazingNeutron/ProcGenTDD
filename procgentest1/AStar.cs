@@ -31,10 +31,15 @@ namespace procgentest1
 
         public bool FindPath(Level2D level)
         {
-            height = level.GetHeight();
-            width = level.GetWidth();
             Node start = new(level.StartPosition());
             Node end = new(level.EndPosition());
+            return FindPath(level, start, end);
+        }
+
+        public bool FindPath(Level2D level, Node start, Node end)
+        {
+            height = level.GetHeight();
+            width = level.GetWidth();
             PriorityQueue<Node, float> OpenList = new();
             List<Node> ClosedList = [];
             List<Node> neighbours;
@@ -160,6 +165,24 @@ namespace procgentest1
             {
                 neighbours.Add(new(new Vector2(current.Position.X - 2, current.Position.Y)));
             }
+        }
+
+        public bool FindPathFromAll(Level2D level)
+        {
+            Node end = new(level.EndPosition());
+            for (int x = 0; x < level.GetWidth(); x++)
+            {
+                for (int y = 0; y < level.GetHeight(); y++)
+                {
+                    Node currentStart = new(new(x, y));
+                    if (level.IsFloor(x, y) && !FindPath(level, currentStart, end))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }
