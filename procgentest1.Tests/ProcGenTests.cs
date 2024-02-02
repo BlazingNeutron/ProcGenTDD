@@ -98,7 +98,7 @@ public class ProcGenTests(ITestOutputHelper output)
      */
     private int FindMap(string expected, string template)
     {
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 2000; i++)
         {
             levelGenerator.SetSeed(i);
             Level2D actualMap = levelGenerator.Generate(new Level2D(template));
