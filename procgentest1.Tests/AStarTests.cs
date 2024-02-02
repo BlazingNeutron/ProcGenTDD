@@ -1,18 +1,28 @@
 namespace procgentest1.Tests;
-
-using System.Text;
-using System.Text.RegularExpressions;
 using procgentest1;
-using Xunit.Abstractions;
 
 public class AStarTests()
 {
 
+    private readonly AStar PathFinder = new();
+
     [Fact]
     public void PlayerJumpsAndThenFalls()
     {
-        AStar aStar = new();
-        Assert.True(aStar.FindPath(new("SF   \n" + 
-                                       "   FE")));
+        Assert.True(PathFinder.FindPath(new("SF   \n" +
+                                            "   FE")));
+    }
+
+    [Fact]
+    public void PlayerCannotFinish()
+    {
+        Assert.False(PathFinder.FindPath(new("S    \n" +
+                                             "   FE")));
+    }
+
+    [Fact]
+    public void PlayerCannotFinishSimpleLevel()
+    {
+        Assert.False(PathFinder.FindPath(new("S  E")));
     }
 }

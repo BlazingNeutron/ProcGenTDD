@@ -57,13 +57,13 @@ public class ProcGenLevel
             return 100;
         }
         int count = 0;
-        for (int i=-2; i<3; i++)
+        for (int i = -2; i < 3; i++)
         {
-            for (int j=-1; j<2; j++)
+            for (int j = -1; j < 2; j++)
             {
-                int neighbourX = x+i;
-                int neighbourY = y+j;
-                if (i==0 && j==0) continue;
+                int neighbourX = x + i;
+                int neighbourY = y + j;
+                if (i == 0 && j == 0) continue;
                 if (!(neighbourX < 0 || neighbourY < 0 || neighbourX >= noiseGrid.GetLength(0) || neighbourY >= noiseGrid.GetLength(1)) && noiseGrid.IsFloor(neighbourX, neighbourY))
                 {
                     count++;
