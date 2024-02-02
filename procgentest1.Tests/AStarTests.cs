@@ -9,15 +9,17 @@ public class AStarTests()
     [Fact]
     public void PlayerJumpsAndThenFalls()
     {
-        Assert.True(PathFinder.FindPath(new("SF   \n" +
-                                            "   FE")));
+        Assert.True(PathFinder.FindPath(new(
+            "SF   \n" +
+            "   FE")));
     }
 
     [Fact]
     public void PlayerCannotFinish()
     {
-        Assert.False(PathFinder.FindPath(new("S    \n" +
-                                             "   FE")));
+        Assert.False(PathFinder.FindPath(new(
+            "S    \n" +
+            "   FE")));
     }
 
     [Fact]
@@ -29,8 +31,27 @@ public class AStarTests()
     [Fact]
     public void PlayerExtraFall()
     {
-        Assert.True(PathFinder.FindPath(new("SFF   \n" +
-                                            "      \n" +
-                                            "  FFFE")));
+        Assert.True(PathFinder.FindPath(new(
+            "SFF   \n" +
+            "      \n" +
+            "  FFFE")));
+    }
+
+    [Fact]
+    public void IsEscapeable()
+    {
+        Assert.True(PathFinder.FindPathFromAll(new(
+            "SFF   \n" +
+            "      \n" +
+            "  FFFE")));
+    }
+
+    [Fact]
+    public void HasInescapeableArea()
+    {
+        Assert.False(PathFinder.FindPathFromAll(new(
+            "SF    \n" +
+            "   FFE\n" +
+            "FF    ")));
     }
 }
