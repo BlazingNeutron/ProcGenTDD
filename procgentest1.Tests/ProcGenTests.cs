@@ -1,12 +1,8 @@
-namespace procgentest1.Tests;
-
-using System;
-using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
-using procgentest1;
 using Xunit.Abstractions;
 
+namespace procgentest1.Tests;
 public class ProcGenTests(ITestOutputHelper output)
 {
     private readonly ProcGenLevel levelGenerator = new();
@@ -67,13 +63,14 @@ public class ProcGenTests(ITestOutputHelper output)
     }
 
     [Fact]
+
     public void Falling()
     {
         AssertMapCanExist(
-            "SF FFF\r\n"+
-            "F F F \r\n"+
-            "FFFF E",
-            GenerateEmptyLevel(6, 3, 0, 17));
+        "SF FFF\r\n" +
+        "  F   \r\n" +
+        "    FE",
+        GenerateEmptyLevel(6, 3, 0, 17));
     }
 
     [Fact]
@@ -84,9 +81,24 @@ public class ProcGenTests(ITestOutputHelper output)
             "   FE",
             GenerateEmptyLevel(5, 2, 0, 9));
     }
+
+    [Fact]
+    public void SeveralPlatforms()
+    {
+        AssertMapCanExist(
+            "SFF \r\n" +
+            "  FF\r\n" +
+            "FF E",
+            GenerateEmptyLevel(4, 3, 0, 11));
+    }
+
+    /**
+     * FindMap - finds a random seed with the expected map, if possible to generate.
+     *   This is a "temporary" method while new proc gen rules are introduced and tweaked.
+     */
     private int FindMap(string expected, string template)
     {
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 2000; i++)
         {
             levelGenerator.SetSeed(i);
             Level2D actualMap = levelGenerator.Generate(new Level2D(template));
@@ -96,6 +108,7 @@ public class ProcGenTests(ITestOutputHelper output)
                 return i;
             }
         }
+        Assert.Fail("Map Cannot be generated");
         return 0;
     }
 

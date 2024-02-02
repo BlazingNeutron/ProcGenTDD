@@ -31,8 +31,8 @@ namespace procgentest1
 
         public bool FindPath(Level2D level)
         {
-            height = level.GetLength(1);
-            width = level.GetLength(0);
+            height = level.GetHeight();
+            width = level.GetWidth();
             Node start = new(level.StartPosition());
             Node end = new(level.EndPosition());
             PriorityQueue<Node, float> OpenList = new();
@@ -108,8 +108,7 @@ namespace procgentest1
 
         private void KeepFalling(Node current, List<Node> neighbours, Level2D level)
         {
-            if (current.Position.X >= width || current.Position.X < 0 ||
-                current.Position.Y > height || current.Position.Y < 0)
+            if (!level.IsWithinBounds(current.Position))
             {
                 return;
             }
