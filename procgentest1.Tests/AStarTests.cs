@@ -54,4 +54,13 @@ public class AStarTests()
             "   FFE\n" +
             "FF    ")));
     }
+
+    [Fact]
+    public void HasUnreachableArea()
+    {
+        Assert.False(PathFinder.FindPathToAll(new(
+            "SF  FF\n" +
+            "      \n" +
+            "FFFFFE")));
+    }
 }

@@ -102,6 +102,16 @@ public class ProcGenTests(ITestOutputHelper output)
             GenerateEmptyLevel(6, 3, 0, 11));
     }
 
+    [Fact]
+    public void SomeUnreachableAreasAreRemoved()
+    {
+        AssertMapCannotExist(
+            "SF  FF\r\n" +
+            "      \r\n" +
+            "FFFFFE",
+            GenerateEmptyLevel(6, 3, 0, 11));
+    }
+
     /**
      * FindMap - finds a random seed with the expected map, if possible to generate.
      *   This is a "temporary" method while new proc gen rules are introduced and tweaked.

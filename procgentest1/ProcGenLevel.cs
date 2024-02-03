@@ -1,3 +1,6 @@
+using System.Numerics;
+using System.Reflection;
+
 namespace procgentest1;
 
 public class ProcGenLevel
@@ -13,6 +16,7 @@ public class ProcGenLevel
 
     private int Density { get; set; }
     private int NumberOfSteps { get; set; }
+    private readonly AStar AStar = new();
 
     public Level2D Generate(Level2D StartingMap)
     {
@@ -21,7 +25,7 @@ public class ProcGenLevel
         for (int currentStep = 0; currentStep < NumberOfSteps; currentStep++)
         {
             CelluarMap = CelluarAutomata(CelluarMap);
-            if (IsSolvable(CelluarMap) && IsEscapeable(CelluarMap))
+            if (IsSolvable(CelluarMap) && IsEscapeable(CelluarMap) && HasUnreachable(CelluarMap))
             {
                 lastSolvableMap = CelluarMap;
             }
@@ -35,7 +39,12 @@ public class ProcGenLevel
 
     private bool IsEscapeable(Level2D celluarMap)
     {
-        return new AStar().FindPathFromAll(celluarMap);
+        return AStar.FindPathFromAll(celluarMap);
+    }
+
+    private bool HasUnreachable(Level2D celluarMap)
+    {
+        return AStar.FindPathToAll(celluarMap);
     }
 
     private Level2D CelluarAutomata(Level2D NoiseGrid)
@@ -59,36 +68,47 @@ public class ProcGenLevel
         return CurrentGrid;
     }
 
-    private static int ProbabilityOfFloor(Level2D NoiseGrid, int x, int y)
+    private int ProbabilityOfFloor(Level2D noiseGrid, int x, int y)
     {
-        if (NoiseGrid.IsStartOrEnd(x, y))
+        if (noiseGrid.IsStartOrEnd(x, y))
         {
             return 100;
         }
-        if (NoiseGrid.IsFloor(x, y))
+        if (noiseGrid.IsFloor(x, y))
         {
-            if (DirectlyAboveOrBelowFloor(NoiseGrid, x, y))
+            if (DirectlyAboveOrBelowFloor(noiseGrid, x, y))
             {
                 return 20;
             }
-            if (BetweenFloors(NoiseGrid, x, y))
+            if (BetweenFloors(noiseGrid, x, y))
             {
                 return 50;
             }
-            if (BesideOneFloor(NoiseGrid, x, y))
+            if (BesideOneFloor(noiseGrid, x, y))
             {
                 return 25;
             }
-            AStar aStar = new();
-            Node end = new(NoiseGrid.EndPosition());
-            Node start = new(new System.Numerics.Vector2(x, y));
-            if (!aStar.FindPath(NoiseGrid, start, end))
+            if (IsUnescapeable(noiseGrid, x, y) || IsUnreachable(noiseGrid, x, y))
             {
                 return 0;
             }
         }
 
         return 50;
+    }
+
+    private bool IsUnreachable(Level2D noiseGrid, int x, int y)
+    {
+        Node start = new(noiseGrid.StartPosition());
+        Node end = new(new System.Numerics.Vector2(x, y));
+        return AStar.FindPath(noiseGrid, start, end);
+    }
+
+    private bool IsUnescapeable(Level2D noiseGrid, int x, int y)
+    {
+        Node end = new(noiseGrid.EndPosition());
+        Node start = new(new System.Numerics.Vector2(x, y));
+        return !AStar.FindPath(noiseGrid, start, end);
     }
 
     private static bool BesideOneFloor(Level2D noiseGrid, int x, int y)

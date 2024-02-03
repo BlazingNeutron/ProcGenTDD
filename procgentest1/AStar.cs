@@ -184,5 +184,23 @@ namespace procgentest1
 
             return true;
         }
+
+        public bool FindPathToAll(Level2D level)
+        {
+            Node start = new(level.StartPosition());
+            for (int x = 0; x < level.GetWidth(); x++)
+            {
+                for (int y = 0; y < level.GetHeight(); y++)
+                {
+                    Node currentEnd = new(new(x, y));
+                    if (level.IsFloor(x, y) && !FindPath(level, start, currentEnd))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
     }
 }
