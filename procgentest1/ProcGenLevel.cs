@@ -101,14 +101,14 @@ public class ProcGenLevel
     {
         Node start = new(noiseGrid.StartPosition());
         Node end = new(new System.Numerics.Vector2(x, y));
-        return AStar.FindPath(noiseGrid, start, end);
+        return AStar.HasPath(noiseGrid, start, end);
     }
 
     private bool IsUnescapeable(Level2D noiseGrid, int x, int y)
     {
         Node end = new(noiseGrid.EndPosition());
         Node start = new(new System.Numerics.Vector2(x, y));
-        return !AStar.FindPath(noiseGrid, start, end);
+        return !AStar.HasPath(noiseGrid, start, end);
     }
 
     private static bool BesideOneFloor(Level2D noiseGrid, int x, int y)
@@ -129,9 +129,9 @@ public class ProcGenLevel
             (NoiseGrid.IsWithinBounds(x, y + 1) && NoiseGrid.IsFloor(x, y + 1));
     }
 
-    private static bool IsSolvable(Level2D CurrentGrid)
+    private bool IsSolvable(Level2D CurrentGrid)
     {
-        return new AStar().FindPath(CurrentGrid);
+        return AStar.HasPath(CurrentGrid);
     }
 
     private Level2D GenerateNoiseGrid(Level2D startingMap)

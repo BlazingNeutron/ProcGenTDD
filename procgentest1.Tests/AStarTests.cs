@@ -9,7 +9,7 @@ public class AStarTests()
     [Fact]
     public void PlayerJumpsAndThenFalls()
     {
-        Assert.True(PathFinder.FindPath(new(
+        Assert.True(PathFinder.HasPath(new(
             "SF   \n" +
             "   FE")));
     }
@@ -17,7 +17,7 @@ public class AStarTests()
     [Fact]
     public void PlayerCannotFinish()
     {
-        Assert.False(PathFinder.FindPath(new(
+        Assert.False(PathFinder.HasPath(new(
             "S    \n" +
             "   FE")));
     }
@@ -25,13 +25,13 @@ public class AStarTests()
     [Fact]
     public void PlayerCannotFinishSimpleLevel()
     {
-        Assert.False(PathFinder.FindPath(new("S  E")));
+        Assert.False(PathFinder.HasPath(new("S  E")));
     }
 
     [Fact]
     public void PlayerExtraFall()
     {
-        Assert.True(PathFinder.FindPath(new(
+        Assert.True(PathFinder.HasPath(new(
             "SFF   \n" +
             "      \n" +
             "  FFFE")));
