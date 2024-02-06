@@ -99,15 +99,15 @@ public class ProcGenLevel
 
     private bool IsUnreachable(Level2D noiseGrid, int x, int y)
     {
-        Node start = new(noiseGrid.StartPosition());
-        Node end = new(new System.Numerics.Vector2(x, y));
+        Node start = new(noiseGrid.StartPosition().X, noiseGrid.StartPosition().Y);
+        Node end = new(x, y);
         return AStar.HasPath(noiseGrid, start, end);
     }
 
     private bool IsUnescapeable(Level2D noiseGrid, int x, int y)
     {
-        Node end = new(noiseGrid.EndPosition());
-        Node start = new(new System.Numerics.Vector2(x, y));
+        Node end = new(noiseGrid.EndPosition().X, noiseGrid.EndPosition().Y);
+        Node start = new(x, y);
         return !AStar.HasPath(noiseGrid, start, end);
     }
 
