@@ -13,6 +13,10 @@
     "dotnet-coverage": {
       "version": "17.10.1",
       "commands": ["dotnet-coverage"]
+    },
+    "dotnet-trace": {
+      "version": "8.0.505301",
+      "commands": ["dotnet-trace"]
     }
   }
 }

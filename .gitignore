@@ -397,4 +397,10 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# dotnet-coverage
 output.cobertura.xml
+
+# dotnet-trace
+*.nettrace
+*.nettrace.etlx

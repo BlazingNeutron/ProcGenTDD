@@ -20,21 +20,22 @@ public class ProcGenLevel
 
     public Level2D Generate(Level2D StartingMap)
     {
-        Level2D lastSolvableMap = new("");
         Level2D CelluarMap = GenerateNoiseGrid(StartingMap);
+        return IterateMap(CelluarMap);
+    }
+
+    private Level2D IterateMap(Level2D noiseGrid)
+    {
+        Level2D CelluarMap = new(noiseGrid);
         for (int currentStep = 0; currentStep < NumberOfSteps; currentStep++)
         {
             CelluarMap = CelluarAutomata(CelluarMap);
-            if (IsSolvable(CelluarMap) && IsEscapeable(CelluarMap) && HasUnreachable(CelluarMap))
-            {
-                lastSolvableMap = CelluarMap;
-            }
-            else
-            {
-                currentStep--;
-            }
         }
-        return lastSolvableMap;
+        if (IsSolvable(CelluarMap) && IsEscapeable(CelluarMap) && IsAllReachable(CelluarMap))
+        {
+            return CelluarMap;
+        }
+        return IterateMap(CelluarMap);
     }
 
     private bool IsEscapeable(Level2D celluarMap)
@@ -42,7 +43,7 @@ public class ProcGenLevel
         return AStar.FindPathFromAll(celluarMap);
     }
 
-    private bool HasUnreachable(Level2D celluarMap)
+    private bool IsAllReachable(Level2D celluarMap)
     {
         return AStar.FindPathToAll(celluarMap);
     }
@@ -99,16 +100,16 @@ public class ProcGenLevel
 
     private bool IsUnreachable(Level2D noiseGrid, int x, int y)
     {
-        Node start = new(noiseGrid.StartPosition());
-        Node end = new(new System.Numerics.Vector2(x, y));
-        return AStar.FindPath(noiseGrid, start, end);
+        Node start = new(noiseGrid.StartPosition().X, noiseGrid.StartPosition().Y);
+        Node end = new(x, y);
+        return AStar.HasPath(noiseGrid, start, end);
     }
 
     private bool IsUnescapeable(Level2D noiseGrid, int x, int y)
     {
-        Node end = new(noiseGrid.EndPosition());
-        Node start = new(new System.Numerics.Vector2(x, y));
-        return !AStar.FindPath(noiseGrid, start, end);
+        Node end = new(noiseGrid.EndPosition().X, noiseGrid.EndPosition().Y);
+        Node start = new(x, y);
+        return !AStar.HasPath(noiseGrid, start, end);
     }
 
     private static bool BesideOneFloor(Level2D noiseGrid, int x, int y)
@@ -129,9 +130,9 @@ public class ProcGenLevel
             (NoiseGrid.IsWithinBounds(x, y + 1) && NoiseGrid.IsFloor(x, y + 1));
     }
 
-    private static bool IsSolvable(Level2D CurrentGrid)
+    private bool IsSolvable(Level2D CurrentGrid)
     {
-        return new AStar().FindPath(CurrentGrid);
+        return AStar.HasPath(CurrentGrid);
     }
 
     private Level2D GenerateNoiseGrid(Level2D startingMap)
