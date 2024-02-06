@@ -2,10 +2,11 @@
 using System.Text.RegularExpressions;
 using procgentest1;
 
+namespace procgentest1;
 public class Program
 {
 
-    private ProcGenLevel levelGenerator = new();
+    private readonly ProcGenLevel levelGenerator = new();
     static void Main(string[] args)
     {
         Program program = new();
@@ -51,10 +52,5 @@ public class Program
         levelGenerator.SetSeed(FindMap(Expected, startingMap));
         Level2D actualMap = levelGenerator.Generate(new Level2D(startingMap));
         Console.WriteLine(actualMap.ToString());
-    }
-
-    private void AssertMapCannotExist(String expected, string startingMap)
-    {
-        FindMap(expected, startingMap);
     }
 }

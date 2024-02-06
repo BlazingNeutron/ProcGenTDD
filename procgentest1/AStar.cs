@@ -5,22 +5,31 @@ namespace procgentest1
 
     public sealed class Node : IEquatable<Node>
     {
-        private int cost = 1;
+        private readonly int cost = 1;
         public readonly Vector2 Position;
-        private Node parent;
-
-        public int Cost { get ; set ; }
-        public Node Parent { get ; set ; }
+        
+        public int Cost { get; set; }
+        public Node? Parent { get; set; }
 
         public Node(int x, int y)
         {
             Position = new Vector2(x, y);
-            parent = null;
+            Parent = null;
         }
 
-        public bool Equals(Node other)
+        [ExcludeFromCodeCoverageAttribute]
+        public override bool Equals(object? obj)
         {
-            return this.Position.X == other.Position.X && this.Position.Y == other.Position.Y;
+            if (obj == null)
+            {
+                return false;
+            }
+            return Equals((Node)obj);
+        }
+
+        public bool Equals(Node? other)
+        {
+            return other != null && this.Position.X == other.Position.X && this.Position.Y == other.Position.Y;
         }
 
         [ExcludeFromCodeCoverageAttribute]
@@ -35,7 +44,7 @@ namespace procgentest1
 
     public class AStar
     {
-        private Level2D level;
+        private Level2D level = new("");
         private int height;
         private int width;
 
@@ -70,24 +79,7 @@ namespace procgentest1
 
                 foreach (Node n in neighbours)
                 {
-                    if (!ClosedList.Contains(n) && !level.IsEmpty(n.Position))
-                    {
-                        bool isFound = false;
-                        foreach (var (Element, Priority) in OpenList.UnorderedItems)
-                        {
-                            if (Element.Equals(n))
-                            {
-                                isFound = true;
-                                break;
-                            }
-                        }
-                        if (!isFound)
-                        {
-                            n.Cost = current.Cost + 1;
-                            OpenList.Enqueue(n, n.Cost);
-                            n.Parent = current;
-                        }
-                    }
+                    CheckNeighbours(ClosedList, OpenList, n, current);
                 }
             }
 
@@ -96,13 +88,35 @@ namespace procgentest1
                 return null;
             }
             Stack<Node> Path = new();
-            Node temp = end;
+            Node? temp = end;
             do
             {
                 Path.Push(temp);
                 temp = temp.Parent;
             } while (temp != start && temp != null);
             return Path;
+        }
+
+        private void CheckNeighbours(List<Node> ClosedList, PriorityQueue<Node, float> OpenList, Node n, Node current)
+        {
+            if (!ClosedList.Contains(n) && !level.IsEmpty(n.Position))
+            {
+                bool isFound = false;
+                foreach (var (Element, Priority) in OpenList.UnorderedItems)
+                {
+                    if (Element.Equals(n))
+                    {
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (!isFound)
+                {
+                    n.Cost = current.Cost + 1;
+                    OpenList.Enqueue(n, n.Cost);
+                    n.Parent = current;
+                }
+            }
         }
 
         private List<Node> GetNeighbouringNodes(Node current)
@@ -154,7 +168,7 @@ namespace procgentest1
             {
                 return;
             }
-            
+
             if (!level.IsEmpty(current.Position))
             {
                 return;
