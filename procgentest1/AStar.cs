@@ -18,15 +18,6 @@ namespace procgentest1
             parent = null;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-            return Equals(obj as Node);
-        }
-
         public bool Equals(Node other)
         {
             return this.Position.X == other.Position.X && this.Position.Y == other.Position.Y;
@@ -58,14 +49,6 @@ namespace procgentest1
         public bool HasPath(Level2D level, Node start, Node end)
         {
             return FindPath(level, start, end) != null;
-        }
-
-        public Stack<Node>? FindPath(Level2D level)
-        {
-            Node start = new(level.StartPosition().X, level.StartPosition().Y);
-            Node end = new(level.EndPosition().X, level.EndPosition().Y);
-            this.level = level;
-            return FindPath(level, start, end);
         }
 
         public Stack<Node>? FindPath(Level2D level, Node start, Node end)
@@ -100,7 +83,7 @@ namespace procgentest1
                         }
                         if (!isFound)
                         {
-                            n.Cost++;
+                            n.Cost = current.Cost + 1;
                             OpenList.Enqueue(n, n.Cost);
                             n.Parent = current;
                         }

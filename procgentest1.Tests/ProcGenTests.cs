@@ -112,6 +112,50 @@ public class ProcGenTests(ITestOutputHelper output)
             GenerateEmptyLevel(6, 3, 0, 11));
     }
 
+    [Fact]
+    public void GeneratedMapsAreSolvable()
+    {
+        Level2D template = new Level2D(GenerateEmptyLevel(6, 3, 0, 17));
+        AStar aStar = new();
+        for (int i = 0; i < 10000; i++)
+        {
+            levelGenerator.SetSeed(i);
+            Level2D actualMap = levelGenerator.Generate(template);
+            if (!aStar.HasPath(actualMap)){
+                Assert.Fail("Did not find a path.");
+            }
+        }
+    }
+
+    [Fact]
+    public void GeneratedMapsAreAllEscapeable()
+    {
+        Level2D template = new Level2D(GenerateEmptyLevel(6, 3, 0, 17));
+        AStar aStar = new();
+        for (int i = 0; i < 10000; i++)
+        {
+            levelGenerator.SetSeed(i);
+            Level2D actualMap = levelGenerator.Generate(template);
+            if (!aStar.FindPathFromAll(actualMap)){
+                Assert.Fail("Did not find a path.");
+            }
+        }
+    }
+
+    [Fact]
+    public void GeneratedMapsAreAllReachable()
+    {
+        Level2D template = new Level2D(GenerateEmptyLevel(6, 3, 0, 17));
+        AStar aStar = new();
+        for (int i = 0; i < 10000; i++)
+        {
+            levelGenerator.SetSeed(i);
+            Level2D actualMap = levelGenerator.Generate(template);
+            if (!aStar.FindPathToAll(actualMap)){
+                Assert.Fail("Did not find a path.");
+            }
+        }
+    }
     /**
      * FindMap - finds a random seed with the expected map, if possible to generate.
      *   This is a "temporary" method while new proc gen rules are introduced and tweaked.

@@ -20,21 +20,22 @@ public class ProcGenLevel
 
     public Level2D Generate(Level2D StartingMap)
     {
-        Level2D lastSolvableMap = new("");
         Level2D CelluarMap = GenerateNoiseGrid(StartingMap);
+        return IterateMap(CelluarMap);
+    }
+
+    private Level2D IterateMap(Level2D noiseGrid)
+    {
+        Level2D CelluarMap = new(noiseGrid);
         for (int currentStep = 0; currentStep < NumberOfSteps; currentStep++)
         {
             CelluarMap = CelluarAutomata(CelluarMap);
-            if (IsSolvable(CelluarMap) && IsEscapeable(CelluarMap) && HasUnreachable(CelluarMap))
-            {
-                lastSolvableMap = CelluarMap;
-            }
-            else
-            {
-                currentStep--;
-            }
         }
-        return lastSolvableMap;
+        if (IsSolvable(CelluarMap) && IsEscapeable(CelluarMap) && IsAllReachable(CelluarMap))
+        {
+            return CelluarMap;
+        }
+        return IterateMap(CelluarMap);
     }
 
     private bool IsEscapeable(Level2D celluarMap)
@@ -42,7 +43,7 @@ public class ProcGenLevel
         return AStar.FindPathFromAll(celluarMap);
     }
 
-    private bool HasUnreachable(Level2D celluarMap)
+    private bool IsAllReachable(Level2D celluarMap)
     {
         return AStar.FindPathToAll(celluarMap);
     }
