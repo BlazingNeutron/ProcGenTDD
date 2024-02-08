@@ -154,7 +154,7 @@ public class ProcGenTests(ITestOutputHelper output)
     [Fact]
     public void LargeMap()
     {
-        Level2D template = new(GenerateEmptyLevel(19, 19));
+        Level2D template = new(GenerateEmptyLevel(25, 25));
         AStar aStar = new();
         levelGenerator.SetSeed(0);
         Level2D actualMap = levelGenerator.Generate(template);

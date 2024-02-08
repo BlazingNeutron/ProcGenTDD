@@ -188,37 +188,33 @@ namespace procgentest1
 
         private void Falling(Node current, List<Node> neighbours)
         {
+            string[] fallChecksMap = new string[width * height];
             if (current.Position.X + 1 < width)
             {
                 Node FallFromRightJump = new(current.Position.X + 1, current.Position.Y);
                 if (!level.IsFloor(FallFromRightJump.Position))
                 {
-                    KeepFalling(FallFromRightJump, neighbours);
+                    KeepFalling(FallFromRightJump, neighbours, fallChecksMap);
                 }
             }
             Node FallFromCurrentPosition = new(current.Position.X, current.Position.Y);
             if (!level.IsFloor(FallFromCurrentPosition.Position))
             {
-                KeepFalling(FallFromCurrentPosition, neighbours);
+                KeepFalling(FallFromCurrentPosition, neighbours, fallChecksMap);
             }
             if (current.Position.X - 1 >= 0)
             {
                 Node FallFromLeftJump = new(current.Position.X - 1, current.Position.Y);
                 if (!level.IsFloor(FallFromLeftJump.Position))
                 {
-                    KeepFalling(FallFromLeftJump, neighbours);
+                    KeepFalling(FallFromLeftJump, neighbours, fallChecksMap);
                 }
             }
         }
 
-        private void KeepFalling(Node current, List<Node> neighbours)
+        private void KeepFalling(Node current, List<Node> neighbours, string[] fallChecksMap)
         {
-            if (!level.IsWithinBounds(current.Position))
-            {
-                return;
-            }
-
-            if (!level.IsEmpty(current.Position))
+            if (!level.IsWithinBounds(current.Position) || !level.IsEmpty(current.Position) || fallChecksMap[current.Position.X + current.Position.Y * width] == "X")
             {
                 return;
             }
@@ -234,7 +230,8 @@ namespace procgentest1
                     }
                     else
                     {
-                        KeepFalling(DownAndRight, neighbours);
+                        KeepFalling(DownAndRight, neighbours, fallChecksMap);
+                        fallChecksMap[DownAndRight.Position.X + DownAndRight.Position.Y * width] = "X";
                     }
                 }
                 if (current.Position.X - 1 >= 0)
@@ -246,7 +243,8 @@ namespace procgentest1
                     }
                     else
                     {
-                        KeepFalling(DownAndLeft, neighbours);
+                        KeepFalling(DownAndLeft, neighbours, fallChecksMap);
+                        fallChecksMap[DownAndLeft.Position.X + DownAndLeft.Position.Y * width] = "X";
                     }
                 }
                 Node StraightDown = new(current.Position.X, current.Position.Y + 1);
@@ -256,7 +254,8 @@ namespace procgentest1
                 }
                 else
                 {
-                    KeepFalling(StraightDown, neighbours);
+                    KeepFalling(StraightDown, neighbours, fallChecksMap);
+                    fallChecksMap[StraightDown.Position.X + StraightDown.Position.Y * width] = "X";
                 }
             }
         }

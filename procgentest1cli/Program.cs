@@ -10,7 +10,16 @@ public class Program
     static void Main(string[] args)
     {
         Program program = new();
-        program.Falling();
+        program.LargeMap();
+    }
+
+    public void LargeMap()
+    {
+        Level2D template = new(GenerateEmptyLevel(26, 26));
+        AStar aStar = new();
+        levelGenerator.SetSeed(0);
+        Level2D actualMap = levelGenerator.Generate(template);
+        Console.WriteLine(actualMap.ToString());
     }
 
     public void Falling()
@@ -35,6 +44,11 @@ public class Program
             }
         }
         return -1;
+    }
+
+    private string GenerateEmptyLevel(int width, int height)
+    {
+        return GenerateEmptyLevel(width, height, 0, width * height -1);
     }
 
     private string GenerateEmptyLevel(int width, int height, int startIndex, int endIndex)
