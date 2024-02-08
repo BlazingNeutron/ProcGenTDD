@@ -5,6 +5,12 @@ namespace procgentest1;
 
 public class Level2D
 {
+    public class CachedAStarResults
+    {
+        public bool[] available = null;
+        public Stack<Node>[] Paths = [];
+        public List<Node> neighbours = null;
+    }
 
     private const string EMPTY_SPACE = " ";
     private const string FLOOR_SPACE = "F";
@@ -13,15 +19,38 @@ public class Level2D
 
     private int width;
     private int height;
+    public CachedAStarResults[] Cache { get; set; }
     public Level2D(Level2D otherLevel)
     {
         width = otherLevel.GetWidth();
         height = otherLevel.GetHeight();
         LevelArray = new string[width * height];
         Array.Copy(otherLevel.LevelArray, LevelArray, width * height);
+        PrepareCache();
     }
 
-    public Level2D(string levelAsString) => ConvertStringMapTo2DArray(levelAsString);
+    public Level2D(string levelAsString)
+    {
+        ConvertStringMapTo2DArray(levelAsString);
+        PrepareCache();
+    }
+
+    private void PrepareCache()
+    {
+        this.Cache = new CachedAStarResults[width * height];
+        for (int i = 0; i < Cache.Length; i++)
+        {
+            Cache[i] = new();
+            Cache[i].Paths = new Stack<Node>[width * height];
+            Cache[i].available = new bool[width * height];
+            for (int j = 0; j < Cache[i].available.Length; j++)
+            {
+                Cache[i].available[j] = false;
+                Cache[i].Paths[j] = null;
+            }
+        }
+    }
+
 
     public int GetWidth() => width;
     public int GetHeight() => height;
@@ -91,11 +120,6 @@ public class Level2D
         return stringMapBuilder.ToString();
     }
 
-    internal bool IsFloor(int x, int y)
-    {
-        return LevelArray[x + y * width] == FLOOR_SPACE || IsStartOrEnd(x, y);
-    }
-
     internal void SetFloor(int x, int y)
     {
         if (!IsStartOrEnd(x, y))
@@ -132,5 +156,15 @@ public class Level2D
     public bool IsWithinBounds(Vector2 Position)
     {
         return IsWithinBounds(Position.X, Position.Y);
+    }
+
+    internal bool IsFloor(int x, int y)
+    {
+        return LevelArray[x + y * width] == FLOOR_SPACE || IsStartOrEnd(x, y);
+    }
+
+    internal bool IsFloor(Vector2 position)
+    {
+        return IsFloor(position.X, position.Y);
     }
 }

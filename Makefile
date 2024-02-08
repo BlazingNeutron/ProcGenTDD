@@ -16,4 +16,10 @@ tests-report:
 clean:
 	rm -rf coveragereport/
 	rm output.cobertura.xml
-	pkill -f "python3 -m http.server"
+	npx http-server ./coveragereport
+
+trace-report:
+	dotnet build
+	dotnet dotnet-trace collect -o dotnet.nettrace -- dotnet exec ./procgentest1cli/bin/Debug/net8.0/procgentest1cli.dll
+	dotnet dotnet-trace report dotnet.nettrace topN -n 20
+	rm dotnet.nettrace dotnet.nettrace.etlx

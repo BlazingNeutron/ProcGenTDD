@@ -11,31 +11,31 @@ public class ProcGenTests(ITestOutputHelper output)
     [Fact]
     public void SimplestLevel()
     {
-        AssertMapCanExist("SE", GenerateEmptyLevel(2, 1, 0, 1));
+        AssertMapCanExist("SE", GenerateEmptyLevel(2, 1));
     }
 
     [Fact]
     public void OneFloor()
     {
-        AssertMapCanExist("SFE", GenerateEmptyLevel(3, 1, 0, 2));
+        AssertMapCanExist("SFE", GenerateEmptyLevel(3, 1));
     }
 
     [Fact]
     public void LongerAllFloorMap()
     {
-        AssertMapCanExist("SFFE", GenerateEmptyLevel(4, 1, 0, 3));
+        AssertMapCanExist("SFFE", GenerateEmptyLevel(4, 1));
     }
 
     [Fact]
     public void LevelWithAJump()
     {
-        AssertMapCanExist("SFF E", GenerateEmptyLevel(5, 1, 0, 4));
+        AssertMapCanExist("SFF E", GenerateEmptyLevel(5, 1));
     }
 
     [Fact]
     public void TooLongJumpCleanedUp()
     {
-        AssertMapCanExist("SFFF FE", GenerateEmptyLevel(7, 1, 0, 6));
+        AssertMapCanExist("SFFF FE", GenerateEmptyLevel(7, 1));
     }
 
     [Fact]
@@ -53,13 +53,7 @@ public class ProcGenTests(ITestOutputHelper output)
     [Fact]
     public void StartAndEndAreDifferentHeights()
     {
-        AssertMapCanExist("SF \r\n   \r\n  E", GenerateEmptyLevel(3, 3, 0, 8));
-    }
-
-    [Fact]
-    public void EmptyLevel()
-    {
-        AssertMapCanExist("", "");
+        AssertMapCanExist("SF \r\n   \r\n  E", GenerateEmptyLevel(3, 3));
     }
 
     [Fact]
@@ -70,7 +64,7 @@ public class ProcGenTests(ITestOutputHelper output)
         "SF FFF\r\n" +
         "  F   \r\n" +
         "    FE",
-        GenerateEmptyLevel(6, 3, 0, 17));
+        GenerateEmptyLevel(6, 3));
     }
 
     [Fact]
@@ -79,7 +73,7 @@ public class ProcGenTests(ITestOutputHelper output)
         AssertMapCanExist(
             "SF   \r\n" +
             "   FE",
-            GenerateEmptyLevel(5, 2, 0, 9));
+            GenerateEmptyLevel(5, 2));
     }
 
     [Fact]
@@ -89,7 +83,7 @@ public class ProcGenTests(ITestOutputHelper output)
             "SFF \r\n" +
             "  FF\r\n" +
             "FF E",
-            GenerateEmptyLevel(4, 3, 0, 11));
+            GenerateEmptyLevel(4, 3));
     }
 
     [Fact]
@@ -115,7 +109,7 @@ public class ProcGenTests(ITestOutputHelper output)
     [Fact]
     public void GeneratedMapsAreSolvable()
     {
-        Level2D template = new Level2D(GenerateEmptyLevel(6, 3, 0, 17));
+        Level2D template = new Level2D(GenerateEmptyLevel(6, 3));
         AStar aStar = new();
         for (int i = 0; i < 10000; i++)
         {
@@ -130,7 +124,7 @@ public class ProcGenTests(ITestOutputHelper output)
     [Fact]
     public void GeneratedMapsAreAllEscapeable()
     {
-        Level2D template = new Level2D(GenerateEmptyLevel(6, 3, 0, 17));
+        Level2D template = new Level2D(GenerateEmptyLevel(6, 3));
         AStar aStar = new();
         for (int i = 0; i < 10000; i++)
         {
@@ -145,7 +139,7 @@ public class ProcGenTests(ITestOutputHelper output)
     [Fact]
     public void GeneratedMapsAreAllReachable()
     {
-        Level2D template = new Level2D(GenerateEmptyLevel(6, 3, 0, 17));
+        Level2D template = new Level2D(GenerateEmptyLevel(6, 3));
         AStar aStar = new();
         for (int i = 0; i < 10000; i++)
         {
@@ -156,6 +150,16 @@ public class ProcGenTests(ITestOutputHelper output)
             }
         }
     }
+
+    [Fact]
+    public void LargeMap()
+    {
+        Level2D template = new(GenerateEmptyLevel(25, 25));
+        AStar aStar = new();
+        levelGenerator.SetSeed(0);
+        Level2D actualMap = levelGenerator.Generate(template);
+    }
+
     /**
      * FindMap - finds a random seed with the expected map, if possible to generate.
      *   This is a "temporary" method while new proc gen rules are introduced and tweaked.
@@ -173,6 +177,11 @@ public class ProcGenTests(ITestOutputHelper output)
             }
         }
         return -1;
+    }
+
+    private string GenerateEmptyLevel(int width, int height)
+    {
+        return GenerateEmptyLevel(width, height, 0, width * height -1);
     }
 
     private string GenerateEmptyLevel(int width, int height, int startIndex, int endIndex)

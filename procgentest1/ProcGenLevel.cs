@@ -114,8 +114,10 @@ public class ProcGenLevel
 
     private static bool BesideOneFloor(Level2D noiseGrid, int x, int y)
     {
-        return (noiseGrid.IsWithinBounds(x + 1, y) && noiseGrid.IsFloor(x + 1, y)) ||
-            (noiseGrid.IsWithinBounds(x - 1, y) && noiseGrid.IsFloor(x - 1, y));
+        return (noiseGrid.IsWithinBounds(x + 1, y) && noiseGrid.IsFloor(x + 1, y) &&
+            noiseGrid.IsWithinBounds(x - 1, y) && !noiseGrid.IsFloor(x - 1, y)) ||
+            (noiseGrid.IsWithinBounds(x + 1, y) && !noiseGrid.IsFloor(x + 1, y) &&
+            noiseGrid.IsWithinBounds(x - 1, y) && noiseGrid.IsFloor(x - 1, y));
     }
 
     private static bool BetweenFloors(Level2D noiseGrid, int x, int y)
