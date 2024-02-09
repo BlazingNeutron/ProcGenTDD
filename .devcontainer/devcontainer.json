@@ -12,7 +12,8 @@
         "ms-dotnettools.csdevkit",
         "SonarSource.sonarlint-vscode",
         "esbenp.prettier-vscode",
-        "ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools",
+        "ms-dotnettools.vscodeintellicode-csharp"
       ]
     }
   },

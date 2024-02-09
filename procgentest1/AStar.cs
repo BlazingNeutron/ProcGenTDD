@@ -5,10 +5,9 @@ namespace procgentest1
 
     public sealed class Node : IEquatable<Node>
     {
-        private readonly int cost = 1;
         public readonly Vector2 Position;
 
-        public int Cost { get; set; }
+        public double Cost { get; set; } = 1;
         public Node? Parent { get; set; }
         private readonly int x;
         private readonly int y;
@@ -39,7 +38,7 @@ namespace procgentest1
         public override int GetHashCode()
         {
             int hash = 17;
-            hash = hash * 23 + cost;
+            hash = hash * 23 + (int)Cost;
             hash = hash * 23 + Position.Y;
             return hash * 23 + Position.X;
         }
@@ -79,23 +78,23 @@ namespace procgentest1
             this.level = level;
             height = level.GetHeight();
             width = level.GetWidth();
-            PriorityQueue<Node, float> OpenList = new(width * height);
+            FastPriorityQueue FastOpenList = new(width * height);
             List<Node> ClosedList = new(width * height);
             List<Node> neighbours;
             neighbourMap = new string[width * height];
             Node current;
 
-            OpenList.Enqueue(start, start.Cost);
-            while (OpenList.Count != 0 && !ClosedList.Contains(end))
+            FastOpenList.Enqueue(start, start.Cost);
+            while (FastOpenList.Count != 0 && !ClosedList.Contains(end))
             {
-                current = OpenList.Dequeue();
+                current = FastOpenList.Dequeue();
                 ClosedList.Add(current);
                 neighbourMap = new string[width * height];
                 neighbours = GetNeighbouringNodes(current);
 
                 foreach (Node n in neighbours)
                 {
-                    CheckNeighbours(ClosedList, OpenList, n, current);
+                    CheckNeighbours(ClosedList, FastOpenList, n, current);
                 }
             }
 
@@ -123,31 +122,29 @@ namespace procgentest1
                     level.Cache[currentStart.Position.X + currentStart.Position.Y * width].Paths[current.Position.X + current.Position.Y * width] = tempPath;
                     currentStart = currentStart.Parent;
                 }
-                
+
             }
             return returnPath;
         }
 
-        private void CheckNeighbours(List<Node> ClosedList, PriorityQueue<Node, float> OpenList, Node n, Node current)
+        private void CheckNeighbours(List<Node> ClosedList, FastPriorityQueue OpenList, Node n, Node current)
         {
             if (!ClosedList.Contains(n) && !level.IsEmpty(n.Position))
             {
-                bool isFound = false;
-                foreach (var (Element, Priority) in OpenList.UnorderedItems)
+                if (!OpenList.Contains(n))
                 {
-                    if (Element.Equals(n))
-                    {
-                        isFound = true;
-                        break;
-                    }
-                }
-                if (!isFound)
-                {
-                    n.Cost = current.Cost + 1;
+                    n.Cost = DistanceBetweenNodes(current, n);
                     OpenList.Enqueue(n, n.Cost);
                     n.Parent = current;
                 }
             }
+        }
+
+        private double DistanceBetweenNodes(Node origin, Node destination)
+        {
+            int xDistance = destination.Position.X - origin.Position.X;
+            int yDistance = destination.Position.Y - origin.Position.Y;
+            return Math.Sqrt(xDistance * xDistance + yDistance * yDistance);
         }
 
         private List<Node> GetNeighbouringNodes(Node current)

@@ -86,7 +86,7 @@ public class AStarTests()
         Stack<Node> Path = PathFinder.FindPath(level, start, end);
         Assert.Equal(new(5,2), Path.Pop());
         Assert.Equal(new(3,2), Path.Pop());
-        Assert.Equal(new(1,2), Path.Pop());
+        Assert.Equal(new(2,2), Path.Pop());
         Assert.Equal(new(2,1), Path.Pop());
         Assert.Equal(new(2,0), Path.Pop());
         Assert.Equal(new(0,0), Path.Pop());

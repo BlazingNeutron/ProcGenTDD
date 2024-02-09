@@ -11,12 +11,11 @@ tests-coverage: tests-only
 	dotnet reportgenerator -reports:"output.cobertura.xml" -targetdir:"coveragereport" -reporttypes:Html
 
 tests-report:
-	python3 -m http.server -d coveragereport/
+	npx http-server ./coveragereport
 
 clean:
 	rm -rf coveragereport/
 	rm output.cobertura.xml
-	npx http-server ./coveragereport
 
 trace-report:
 	dotnet build
